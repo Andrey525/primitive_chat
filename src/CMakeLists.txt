@@ -1,4 +1,4 @@
-add_executable(main src/main.cpp)
+add_executable(main src/main.cpp src/LoginWindow.cpp)
 set_compile_options(main)
 target_include_directories(main PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(main PRIVATE sfml-graphics sfml-window sfml-network sfml-system sfml-audio tgui)

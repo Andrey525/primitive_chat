@@ -1,2 +1,7 @@
+#include "LoginWindow.hpp"
 
-int main() { return 0; }
+int main() {
+    chat::LoginWindow loginWindow;
+    loginWindow.renderWindow();
+    return 0;
+}
