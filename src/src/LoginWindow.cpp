@@ -39,6 +39,7 @@ LoginWindow::LoginWindow() {
     ConfirmButton->setSize(200, 50);
     ConfirmButton->setTextSize(20);
     ConfirmButton->setPosition(100, 190);
+    ConfirmButton->onClick(&LoginWindow::checkLoginName, this);
     Gui.add(ConfirmButton);
 
     NicknameInputBox->onMouseEnter(
@@ -82,6 +83,21 @@ void LoginWindow::renderWindow() {
         Gui.draw();
         Window.display();
     }
+}
+
+void LoginWindow::checkLoginName() {
+    AllLoginName = NetworkInteraction::GetAllLoginName();
+    if (NicknameInputBox->getText().length() < MAX_SIZE_LENGHT_NAME) {
+        for (auto item : AllLoginName) {
+            if (NicknameInputBox->getText() == item) {
+                GoodAvtorization = false;
+                break;
+            }
+        }
+        LoginName = NicknameInputBox->getText();
+        GoodAvtorization = true;
+    }
+    GoodAvtorization = false;
 }
 
 } // namespace chat

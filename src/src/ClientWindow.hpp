@@ -1,6 +1,8 @@
+#include "NetworkInteraction.hpp"
 #include <SFML/Graphics.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
 #include <TGUI/TGUI.hpp>
+#include <vector>
 
 #pragma once
 
@@ -16,9 +18,11 @@ class ClientWindow {
     tgui::EditBox::Ptr MessageInputBox;
     tgui::ListBox::Ptr NicknameListBox;
     tgui::Button::Ptr SendMessageButton;
+    tgui::String LoginName;
+    std::vector<MessageStructure> AllMessage;
 
   public:
-    ClientWindow();
+    ClientWindow(tgui::String LoginName);
     void renderWindow();
 };
 

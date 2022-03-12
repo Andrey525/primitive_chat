@@ -1,8 +1,9 @@
 #include "ClientWindow.hpp"
+#include "NetworkInteraction.hpp"
 
 namespace chat {
 
-ClientWindow::ClientWindow() {
+ClientWindow::ClientWindow(tgui::String LoginName) {
     Window.create(sf::VideoMode(800, 600), "Chat-Client",
                   sf::Style::Titlebar | sf::Style::Close);
     Window.setFramerateLimit(60);
@@ -43,8 +44,6 @@ ClientWindow::ClientWindow() {
     NicknameListBox->setSize(200, 475);
     NicknameListBox->setPosition(575, 25);
     NicknameListBox->setTextSize(20);
-    NicknameListBox->addItem("Andrey");
-    NicknameListBox->addItem("Dima");
     Gui.add(NicknameListBox);
 
     SendMessageButton = tgui::Button::create();
@@ -64,6 +63,9 @@ ClientWindow::ClientWindow() {
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Hand); });
     SendMessageButton->onMouseLeave(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
+
+    this->LoginName = LoginName;
+    AllMessage = NetworkInteraction::Update();
 }
 
 void ClientWindow::renderWindow() {
