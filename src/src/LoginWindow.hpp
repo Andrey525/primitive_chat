@@ -17,12 +17,11 @@ class LoginWindow {
     tgui::Label::Ptr Label;
     tgui::EditBox::Ptr NicknameInputBox;
     tgui::Button::Ptr ConfirmButton;
-    std::string PathToFont{"./font/Revamped.otf"};
+    // std::string PathToFont{"./font/Revamped.otf"};
 
   public:
     LoginWindow();
     void renderWindow();
-    friend void handler();
 };
 
 } // namespace chat

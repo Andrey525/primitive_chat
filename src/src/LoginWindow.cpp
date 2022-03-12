@@ -2,15 +2,14 @@
 
 namespace chat {
 
-void handler() { std::cout << "Button was clicked\n"; }
-
 LoginWindow::LoginWindow() {
     Window.create(sf::VideoMode(400, 300), "Login",
                   sf::Style::Titlebar | sf::Style::Close);
     Window.setFramerateLimit(60);
+    Window.setKeyRepeatEnabled(false);
 
     Gui.setWindow(Window);
-    Gui.setFont(static_cast<tgui::Font>(PathToFont));
+    // Gui.setFont(static_cast<tgui::Font>(PathToFont));
 
     WidgetsTheme.load("./themes/Black.txt");
 
@@ -24,7 +23,6 @@ LoginWindow::LoginWindow() {
     Label->setPosition(50, 40);
     Label->setTextSize(20);
     Label->setHorizontalAlignment(tgui::Label::HorizontalAlignment::Center);
-    // Label->getRenderer()->setTextColor(tgui::Color::Black);
     Gui.add(Label);
 
     NicknameInputBox = tgui::EditBox::create();
@@ -42,6 +40,21 @@ LoginWindow::LoginWindow() {
     ConfirmButton->setTextSize(20);
     ConfirmButton->setPosition(100, 190);
     Gui.add(ConfirmButton);
+
+    NicknameInputBox->onMouseEnter(
+        [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Text); });
+    NicknameInputBox->onMouseLeave(
+        [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
+
+    ConfirmButton->onMouseEnter(
+        [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Hand); });
+    ConfirmButton->onClick([&]() {
+        Label->setText("Nickname is taken...\nTry enter another nickname");
+        Label->getRenderer()->setTextColor(tgui::Color(255, 206, 26));
+        NicknameInputBox->setText("");
+    });
+    ConfirmButton->onMouseLeave(
+        [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
 }
 
 void LoginWindow::renderWindow() {
@@ -51,9 +64,20 @@ void LoginWindow::renderWindow() {
             if (event.type == sf::Event::Closed) {
                 Window.close();
             }
+            // if (event.type == sf::Event::KeyPressed) {
+            //     if (event.key.code == sf::Keyboard::Enter) {
+            //         ConfirmButton->onClick([&]() {
+            //             Label->setText(
+            //                 "Nickname is taken...\nTry enter another
+            //                 nickname");
+            //             Label->getRenderer()->setTextColor(
+            //                 tgui::Color(255, 206, 26));
+            //             NicknameInputBox->setText("");
+            //         });
+            //     }
+            // }
             Gui.handleEvent(event);
         }
-        ConfirmButton->onClick(handler);
         Window.clear();
         Gui.draw();
         Window.display();
