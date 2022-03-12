@@ -1,4 +1,5 @@
 #include "LoginWindow.hpp"
+#include "NetworkInteraction.hpp"
 
 int main() {
     chat::LoginWindow loginWindow;

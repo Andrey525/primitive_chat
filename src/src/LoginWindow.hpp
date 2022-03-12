@@ -10,6 +10,7 @@ namespace chat {
 
 class LoginWindow {
   private:
+    std::string LoginName;
     sf::RenderWindow Window;
     tgui::Gui Gui;
     tgui::Theme WidgetsTheme;
@@ -22,6 +23,12 @@ class LoginWindow {
   public:
     LoginWindow();
     void renderWindow();
+
+    void set_LoginName(std::string LoginName) { this->LoginName = LoginName;}
+
+    std::string get_LoginName() { return LoginName; }
+
+
 };
 
 } // namespace chat
