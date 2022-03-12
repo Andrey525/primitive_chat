@@ -1,7 +1,7 @@
 #include "MainWindow.hpp"
 #include <NetworkInteraction.hpp>
 
-MainWindow::MainWindow(std::string LoginName)
+MainWindow::MainWindow(tgui::String LoginName)
 {
     this->LoginName = LoginName;
     AllMessage = NetworkInteraction::Update();

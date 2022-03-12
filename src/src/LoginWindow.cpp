@@ -1,4 +1,5 @@
 #include "LoginWindow.hpp"
+#include "NetworkInteraction.hpp"
 
 namespace chat {
 
@@ -39,6 +40,7 @@ LoginWindow::LoginWindow() {
     ConfirmButton->setSize(200, 50);
     ConfirmButton->setTextSize(20);
     ConfirmButton->setPosition(100, 190);
+    ConfirmButton->onClick(&LoginWindow::CheckLoginName, this);
     Gui.add(ConfirmButton);
 
     NicknameInputBox->onMouseEnter(
@@ -82,6 +84,25 @@ void LoginWindow::renderWindow() {
         Gui.draw();
         Window.display();
     }
+}
+
+void LoginWindow::CheckLoginName()
+{
+    AllLoginName = NetworkInteraction::GetAllLoginName();
+    if (NicknameInputBox->getText().length() < 14)
+    {
+        for(auto item : AllLoginName)
+        {
+            if (NicknameInputBox->getText() == item)
+            {
+                GoodAvtorization = false;                    
+                break;
+            }
+        }
+        LoginName = NicknameInputBox->getText();
+        GoodAvtorization = true;        
+    }
+    GoodAvtorization = false;
 }
 
 } // namespace chat

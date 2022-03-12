@@ -10,5 +10,6 @@ public:
     ~NetworkInteraction() = default;
 
     std::vector<MessageStructure> static Update();
-    void static SendMSG(std::string msg);
+    std::vector<std::string> static GetAllLoginName();
+    void static SendMSG(std::string msg, std::string LoginName);
 };

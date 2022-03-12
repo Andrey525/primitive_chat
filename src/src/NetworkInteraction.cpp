@@ -6,7 +6,16 @@ std::vector<MessageStructure> NetworkInteraction::Update()
     return result;
 }
 
-void NetworkInteraction::SendMSG(std::string msg)
+void NetworkInteraction::SendMSG(std::string msg, std::string LoginName)
 {
-    std::cout << "Я послал MSG" << msg << std::endl;
+    MessageStructure MsgStruct;
+    MsgStruct.Messege = msg;
+    MsgStruct.LoginName = LoginName;
+    MsgStruct.now = time(NULL);
+    //Послать на сервер
+}
+std::vector<std::string> NetworkInteraction::GetAllLoginName()
+{
+    std::vector<std::string> AllLoginName;
+    return AllLoginName;
 }
