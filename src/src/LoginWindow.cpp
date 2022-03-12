@@ -89,7 +89,7 @@ void LoginWindow::renderWindow() {
 void LoginWindow::CheckLoginName()
 {
     AllLoginName = NetworkInteraction::GetAllLoginName();
-    if (NicknameInputBox->getText().length() < 14)
+    if (NicknameInputBox->getText().length() < 10)
     {
         for(auto item : AllLoginName)
         {
