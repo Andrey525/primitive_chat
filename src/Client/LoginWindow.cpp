@@ -9,7 +9,6 @@ LoginWindow::LoginWindow() {
     Window.setKeyRepeatEnabled(false);
 
     Gui.setWindow(Window);
-    // Gui.setFont(static_cast<tgui::Font>(PathToFont));
 
     WidgetsTheme.load("./themes/Black.txt");
 
@@ -49,11 +48,6 @@ LoginWindow::LoginWindow() {
 
     ConfirmButton->onMouseEnter(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Hand); });
-    ConfirmButton->onClick([&]() {
-        Label->setText("Nickname is taken...\nTry enter another nickname");
-        Label->getRenderer()->setTextColor(tgui::Color(255, 206, 26));
-        NicknameInputBox->setText("");
-    });
     ConfirmButton->onMouseLeave(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
 }

@@ -2,7 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
 #include <TGUI/TGUI.hpp>
-// #include <string>
 
 #pragma once
 
@@ -18,8 +17,7 @@ class LoginWindow {
     tgui::Label::Ptr Label;
     tgui::EditBox::Ptr NicknameInputBox;
     tgui::Button::Ptr ConfirmButton;
-    // std::string PathToFont{"./font/Revamped.otf"};
-    std::vector<std::string> AllLoginName;
+    std::vector<tgui::String> AllLoginName;
     bool GoodAvtorization = false;
     size_t MAX_SIZE_LENGHT_NAME = 10;
 
