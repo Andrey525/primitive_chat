@@ -1,4 +1,5 @@
-#include "NetworkInteraction.hpp"
+#include <MessageStruct.hpp>
+#include <NetworkInteraction.hpp>
 #include <SFML/Graphics.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
 #include <TGUI/TGUI.hpp>
@@ -8,7 +9,7 @@
 
 namespace chat {
 
-class ClientWindow {
+class ChatRoom {
   private:
     sf::RenderWindow Window;
     tgui::Gui Gui;
@@ -18,12 +19,12 @@ class ClientWindow {
     tgui::EditBox::Ptr MessageInputBox;
     tgui::ListBox::Ptr NicknameListBox;
     tgui::Button::Ptr SendMessageButton;
-    tgui::String LoginName;
-    std::vector<MessageStructure> AllMessage;
+    tgui::String ClientNickname;
 
   public:
-    ClientWindow(tgui::String LoginName);
-    void renderWindow();
+    ChatRoom(tgui::String clientNickname);
+    void chatRoomLoop();
+    void sendMessage();
 };
 
 } // namespace chat

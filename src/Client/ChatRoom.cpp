@@ -1,9 +1,9 @@
-#include "ClientWindow.hpp"
-#include "NetworkInteraction.hpp"
+#include <ChatRoom.hpp>
+#include <NetworkInteraction.hpp>
 
 namespace chat {
 
-ClientWindow::ClientWindow(tgui::String LoginName) {
+ChatRoom::ChatRoom(tgui::String clientNickname) {
     Window.create(sf::VideoMode(800, 600), "Chat-Client",
                   sf::Style::Titlebar | sf::Style::Close);
     Window.setFramerateLimit(60);
@@ -24,11 +24,6 @@ ClientWindow::ClientWindow(tgui::String LoginName) {
     ChatBox->setTextSize(20);
     ChatBox->setTextColor(tgui::Color(200, 200, 200));
     ChatBox->setLinesStartFromTop();
-    ChatBox->addLine("Dima: Hi! Wazzap, Man");
-    ChatBox->addLine("Andrey: Hi, Bro. Normul' ;)");
-    ChatBox->addLine("Dima: Eeee! See: 01100110 11100011 11111111 01010111 "
-                     "11001100 Pricolno, da?");
-    ChatBox->addLine("Andrey: What are doing here!? Are you chilling?");
     Gui.add(ChatBox);
 
     MessageInputBox = tgui::EditBox::create();
@@ -61,14 +56,33 @@ ClientWindow::ClientWindow(tgui::String LoginName) {
 
     SendMessageButton->onMouseEnter(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Hand); });
+    SendMessageButton->onClick(&ChatRoom::sendMessage, this);
     SendMessageButton->onMouseLeave(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
 
-    this->LoginName = LoginName;
-    AllMessage = NetworkInteraction::Update();
+    ClientNickname = clientNickname;
+    // Init widgets' content
+    NicknameListBox->addItem(ClientNickname);
+
+    NetworkInteraction::connectToServer(ClientNickname);
+
+    std::vector<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
+                                                        "Vasiliy", "Solbon"};
+    // std::vector<tgui::String> membersOnlineNicknames =
+    // NetworkInteraction::getListOfOnlineMembers();
+    for (auto otherMemberNickname : membersOnlineNicknames) {
+        NicknameListBox->addItem(otherMemberNickname);
+    }
+    std::vector<MessageStruct> listOfLastMessages = {{"Andrey", "HELLO"},
+                                                     {"Solbon", "HEY"}};
+    // std::vector<MessageStruct> listOfLastMessages =
+    // NetworkInteraction::getListOfLastMessages();
+    for (auto messageStruct : listOfLastMessages) {
+        ChatBox->addLine(messageStruct.Nickname + ": " + messageStruct.Message);
+    }
 }
 
-void ClientWindow::renderWindow() {
+void ChatRoom::chatRoomLoop() {
     while (Window.isOpen()) {
         sf::Event event;
         while (Window.pollEvent(event)) {
@@ -80,6 +94,16 @@ void ClientWindow::renderWindow() {
         Window.clear();
         Gui.draw();
         Window.display();
+    }
+}
+
+void ChatRoom::sendMessage() {
+    if (MessageInputBox->getText().length() > 0) {
+        tgui::String temp;
+        temp = MessageInputBox->getText();
+        ChatBox->addLine(ClientNickname + ": " + temp);
+        MessageInputBox->setText("");
+        NetworkInteraction::sendMSG(temp, ClientNickname);
     }
 }
 

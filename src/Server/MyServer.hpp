@@ -1,16 +1,13 @@
+#include <ClientStruct.hpp>
+#include <MessageStruct.hpp>
 #include <iostream>
 #include <vector>
-#include "ClientStruct.hpp"
-#include "MessageStructure.hpp"
-class MyServer
-{
-private:
+class MyServer {
+  private:
     std::vector<ClientStruct> AllUsers;
-    std::vector<MessageStructure> AllMessage;
-public:
+    std::vector<MessageStruct> AllMessage;
+
+  public:
     MyServer(/* args */);
     ~MyServer();
-
-    
 };
-

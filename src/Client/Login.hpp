@@ -1,4 +1,5 @@
-#include "NetworkInteraction.hpp"
+#include <MessageStruct.hpp>
+#include <NetworkInteraction.hpp>
 #include <SFML/Graphics.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
 #include <TGUI/TGUI.hpp>
@@ -7,9 +8,8 @@
 
 namespace chat {
 
-class LoginWindow {
+class Login {
   private:
-    tgui::String LoginName;
     sf::RenderWindow Window;
     tgui::Gui Gui;
     tgui::Theme WidgetsTheme;
@@ -17,17 +17,15 @@ class LoginWindow {
     tgui::Label::Ptr Label;
     tgui::EditBox::Ptr NicknameInputBox;
     tgui::Button::Ptr ConfirmButton;
-    std::vector<tgui::String> AllLoginName;
+    tgui::String ClientNickname;
     bool GoodAvtorization = false;
     size_t MAX_SIZE_LENGHT_NAME = 10;
 
   public:
-    LoginWindow();
-    void renderWindow();
-    void checkLoginName();
-
-    void set_LoginName(tgui::String LoginName) { this->LoginName = LoginName; }
-    tgui::String get_LoginName() { return LoginName; }
+    Login();
+    tgui::String loginLoop();
+    void checkClientNickname();
+    tgui::String getClientNickname() { return ClientNickname; }
 };
 
 } // namespace chat

@@ -1,20 +1,22 @@
-#pragma once
-#include "MessageStructure.hpp"
+#include <Commands.hpp>
+#include <MessageStruct.hpp>
+#include <SFML/Network.hpp>
 #include <TGUI/TGUI.hpp>
 #include <iostream>
 #include <vector>
-#include <SFML/Network.hpp>
+
+#pragma once
 
 class NetworkInteraction {
   private:
     NetworkInteraction() = default;
     ~NetworkInteraction() = default;
-    
-    sf::IpAddress ServerIpAdress;
-    ushort ServerPort;
 
   public:
-    std::vector<MessageStructure> static Update();
-    std::vector<tgui::String> static GetAllLoginName();
-    void static SendMSG(tgui::String msg, tgui::String LoginName);
+    static sf::TcpSocket Socket;
+
+    void static connectToServer(tgui::String clientNickname);
+    std::vector<MessageStruct> static getListOfLastMessages();
+    std::vector<tgui::String> static getListOfOnlineMembers();
+    void static sendMSG(tgui::String msg, tgui::String clientNickname);
 };

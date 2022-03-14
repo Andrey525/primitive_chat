@@ -1,9 +1,5 @@
-#include "MyServer.hpp"
+#include <MyServer.hpp>
 
-MyServer::MyServer(/* args */)
-{
-}
+MyServer::MyServer(/* args */) {}
 
-MyServer::~MyServer()
-{
-}
+MyServer::~MyServer() {}

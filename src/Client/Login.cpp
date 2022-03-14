@@ -1,8 +1,8 @@
-#include "LoginWindow.hpp"
+#include <Login.hpp>
 
 namespace chat {
 
-LoginWindow::LoginWindow() {
+Login::Login() {
     Window.create(sf::VideoMode(400, 300), "Login",
                   sf::Style::Titlebar | sf::Style::Close);
     Window.setFramerateLimit(60);
@@ -38,7 +38,6 @@ LoginWindow::LoginWindow() {
     ConfirmButton->setSize(200, 50);
     ConfirmButton->setTextSize(20);
     ConfirmButton->setPosition(100, 190);
-    ConfirmButton->onClick(&LoginWindow::checkLoginName, this);
     Gui.add(ConfirmButton);
 
     NicknameInputBox->onMouseEnter(
@@ -48,50 +47,50 @@ LoginWindow::LoginWindow() {
 
     ConfirmButton->onMouseEnter(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Hand); });
+    ConfirmButton->onClick(&Login::checkClientNickname, this);
     ConfirmButton->onMouseLeave(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
 }
 
-void LoginWindow::renderWindow() {
+tgui::String Login::loginLoop() {
     while (Window.isOpen()) {
         sf::Event event;
         while (Window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 Window.close();
             }
-            // if (event.type == sf::Event::KeyPressed) {
-            //     if (event.key.code == sf::Keyboard::Enter) {
-            //         ConfirmButton->onClick([&]() {
-            //             Label->setText(
-            //                 "Nickname is taken...\nTry enter another
-            //                 nickname");
-            //             Label->getRenderer()->setTextColor(
-            //                 tgui::Color(255, 206, 26));
-            //             NicknameInputBox->setText("");
-            //         });
-            //     }
-            // }
             Gui.handleEvent(event);
         }
         Window.clear();
         Gui.draw();
         Window.display();
+        if (GoodAvtorization == true) {
+            Window.close();
+        }
     }
+    return ClientNickname;
 }
 
-void LoginWindow::checkLoginName() {
-    AllLoginName = NetworkInteraction::GetAllLoginName();
-    if (NicknameInputBox->getText().length() < MAX_SIZE_LENGHT_NAME) {
-        for (auto item : AllLoginName) {
-            if (NicknameInputBox->getText() == item) {
-                GoodAvtorization = false;
-                break;
+void Login::checkClientNickname() {
+    std::vector<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
+                                                        "Vasiliy", "Solbon"};
+    // std::vector<tgui::String> membersOnlineNicknames =
+    // NetworkInteraction::getListOfOnlineMembers();
+    if (NicknameInputBox->getText().length() > 0 &&
+        NicknameInputBox->getText().length() < MAX_SIZE_LENGHT_NAME) {
+        for (auto otherMemberNickname : membersOnlineNicknames) {
+            if (NicknameInputBox->getText() == otherMemberNickname) {
+                Label->setText("Nickname is taken...");
+                NicknameInputBox->setText("");
+                return;
             }
         }
-        LoginName = NicknameInputBox->getText();
+        ClientNickname = NicknameInputBox->getText();
         GoodAvtorization = true;
+    } else {
+        Label->setText("Nickname's length must be between 1 and 10 chars...");
+        NicknameInputBox->setText("");
     }
-    GoodAvtorization = false;
 }
 
 } // namespace chat
