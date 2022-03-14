@@ -72,9 +72,9 @@ tgui::String Login::loginLoop() {
 }
 
 void Login::checkClientNickname() {
-    std::vector<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
-                                                        "Vasiliy", "Solbon"};
-    // std::vector<tgui::String> membersOnlineNicknames =
+    std::list<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
+                                                      "Vasiliy", "Solbon"};
+    // std::list<tgui::String> membersOnlineNicknames =
     // NetworkInteraction::getListOfOnlineMembers();
     if (NicknameInputBox->getText().length() > 0 &&
         NicknameInputBox->getText().length() < MAX_SIZE_LENGHT_NAME) {

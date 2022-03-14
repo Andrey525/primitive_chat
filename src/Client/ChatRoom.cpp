@@ -61,23 +61,24 @@ ChatRoom::ChatRoom(tgui::String clientNickname) {
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
 
     ClientNickname = clientNickname;
+
     // Init widgets' content
     NicknameListBox->addItem(ClientNickname);
 
     NetworkInteraction::connectToServer(ClientNickname);
 
-    std::vector<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
-                                                        "Vasiliy", "Solbon"};
-    // std::vector<tgui::String> membersOnlineNicknames =
+    std::list<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
+                                                      "Vasiliy", "Solbon"};
+    // std::list<tgui::String> membersOnlineNicknames =
     // NetworkInteraction::getListOfOnlineMembers();
     for (auto otherMemberNickname : membersOnlineNicknames) {
         NicknameListBox->addItem(otherMemberNickname);
     }
-    std::vector<MessageStruct> listOfLastMessages = {{"Andrey", "HELLO"},
-                                                     {"Solbon", "HEY"}};
-    // std::vector<MessageStruct> listOfLastMessages =
-    // NetworkInteraction::getListOfLastMessages();
-    for (auto messageStruct : listOfLastMessages) {
+    std::list<MessageStruct> listOfAllMessages = {{"Andrey", "HELLO"},
+                                                  {"Solbon", "HEY"}};
+    // std::list<MessageStruct> listOfAllMessages =
+    // NetworkInteraction::getListOfAllMessages();
+    for (auto messageStruct : listOfAllMessages) {
         ChatBox->addLine(messageStruct.Nickname + ": " + messageStruct.Message);
     }
 }

@@ -1,5 +1,7 @@
 #include <NetworkInteraction.hpp>
 
+namespace chat {
+
 sf::TcpSocket NetworkInteraction::Socket; // init Socket (because static)
 
 void NetworkInteraction::connectToServer(tgui::String clientNickname) {
@@ -13,8 +15,8 @@ void NetworkInteraction::connectToServer(tgui::String clientNickname) {
     // }
 }
 
-std::vector<MessageStruct> NetworkInteraction::getListOfLastMessages() {
-    std::vector<MessageStruct> result;
+std::list<MessageStruct> NetworkInteraction::getListOfAllMessages() {
+    std::list<MessageStruct> result;
     return result;
 }
 
@@ -26,18 +28,20 @@ void NetworkInteraction::sendMSG(tgui::String msg, tgui::String nickname) {
     //     // error
     // }
 }
-std::vector<tgui::String> NetworkInteraction::getListOfOnlineMembers() {
+std::list<tgui::String> NetworkInteraction::getListOfOnlineMembers() {
     sf::Packet packet;
-    std::vector<tgui::String> nicknames;
+    std::list<tgui::String> nicknames;
 
     packet << REQUEST_NICKNAMES_LIST;
     // if (Socket.send(packet) != sf::Socket::Done) {
     //     // error
     // }
-    // if (Socket.receive(packet) != sf::Socket::Done) {
+    // if (Socket.receive(nicknames, sizeof(std::list<tgui::String>) * (size
+    // вектора, но он неизвестен!)) != sf::Socket::Done) {
     //     // error
     // }
 
-    // packet >> static_cast<tgui::String> nicknames;
     return nicknames;
 }
+
+} // namespace chat

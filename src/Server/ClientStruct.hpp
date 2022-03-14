@@ -1,10 +1,12 @@
-#include <iostream>
 #include <SFML/Network.hpp>
 #include <TGUI/TGUI.hpp>
+#include <iostream>
 
-struct ClientStruct
-{
-    sf::IpAddress IpAdress;
-    ushort port;
-    tgui::String LoginName;
+namespace chat {
+
+struct ClientStruct {
+    sf::TcpSocket Socket;
+    tgui::String Nickname;
 };
+
+} // namespace chat

@@ -3,9 +3,11 @@
 #include <SFML/Network.hpp>
 #include <TGUI/TGUI.hpp>
 #include <iostream>
-#include <vector>
+#include <list>
 
 #pragma once
+
+namespace chat {
 
 class NetworkInteraction {
   private:
@@ -16,7 +18,9 @@ class NetworkInteraction {
     static sf::TcpSocket Socket;
 
     void static connectToServer(tgui::String clientNickname);
-    std::vector<MessageStruct> static getListOfLastMessages();
-    std::vector<tgui::String> static getListOfOnlineMembers();
+    std::list<MessageStruct> static getListOfAllMessages();
+    std::list<tgui::String> static getListOfOnlineMembers();
     void static sendMSG(tgui::String msg, tgui::String clientNickname);
 };
+
+} // namespace chat
