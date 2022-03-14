@@ -13,9 +13,10 @@ class NetworkInteraction {
   private:
     NetworkInteraction() = default;
     ~NetworkInteraction() = default;
-
   public:
     static sf::TcpSocket Socket;
+    static int MAX_COUNT_USERS;
+    static int MAX_COUNT_MESSAGES;
 
     void static connectToServer(tgui::String clientNickname);
     std::list<MessageStruct> static getListOfAllMessages();

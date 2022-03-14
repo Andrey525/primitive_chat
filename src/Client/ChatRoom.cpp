@@ -66,7 +66,7 @@ ChatRoom::ChatRoom(tgui::String clientNickname) {
     NicknameListBox->addItem(ClientNickname);
 
     NetworkInteraction::connectToServer(ClientNickname);
-
+    
     std::list<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
                                                       "Vasiliy", "Solbon"};
     // std::list<tgui::String> membersOnlineNicknames =

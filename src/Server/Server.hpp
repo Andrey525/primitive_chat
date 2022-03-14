@@ -11,17 +11,18 @@ class Server {
     std::list<ClientStruct> OnlineUsers;
     std::list<MessageStruct> AllMessages;
     sf::TcpListener Listener;
-
+    size_t MAX_COUNT_MESSAGES = 1024;
   public:
     Server(/* args */);
     ~Server();
 
     void accept();
-    void sendNicknameNewClient();
-    void sendListOfAllMessages();
-    void sendListOfOnlineMembers();
-    void receiveMessage();
-    void sendMessageToOnlineUsers();
+    void sendNicknameNewClient(tgui::String nickname);
+    void sendListOfAllMessages(tgui::String nickname);
+    void sendListOfOnlineMembers(tgui::String nickname);
+    void sendMessageToOnlineUsers(MessageStruct msg);
+    MessageStruct receiveMessage();
+    
 };
 
 } // namespace chat
