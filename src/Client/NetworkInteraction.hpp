@@ -22,6 +22,7 @@ class NetworkInteraction {
     std::list<tgui::String> static getListOfOnlineMembers();
     void static sendMSG(tgui::String msg, tgui::String clientNickname);
     MessageStruct static recvMSG();
+    tgui::String static getNewClient();
 };
 
 } // namespace chat

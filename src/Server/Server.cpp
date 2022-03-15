@@ -51,6 +51,7 @@ void Server::accept() {
         }
         client.Nickname = tguiNickname;
         sendNicknameNewClientToOther(client.Nickname);
+        sendListOfOnlineMembers(client.Nickname);
     }
 }
 
@@ -90,11 +91,14 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
                      });
 
     // возможно size надо на один меньше делать, из-за accept'а
-    packet << static_cast<uint32_t>(OnlineUsers.size());
+    packet << static_cast<uint32_t>(OnlineUsers.size() - 1);
 
     std::for_each(OnlineUsers.begin(), OnlineUsers.end(),
-                  [&packet](const ClientStruct &client) {
-                      packet << static_cast<std::string>(client.Nickname);
+                    [&packet, &itClient](const ClientStruct &client) {
+                        if (itClient->Nickname != client.Nickname)
+                        {
+                            packet << static_cast<std::string>(client.Nickname);
+                        }
                   });
 
     if (itClient->Socket.send(packet) != sf::Socket::Done) {
@@ -104,7 +108,7 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
 
 void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
     sf::Packet packet;
-    packet << static_cast<std::string>(whatNickname);
+    packet << NEW_CLIENT <<static_cast<std::string>(whatNickname);
     for (auto &user : OnlineUsers) {
         if (whatNickname == user.Nickname) {
             continue;

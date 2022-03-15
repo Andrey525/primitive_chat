@@ -4,6 +4,18 @@ namespace chat {
 
 sf::TcpSocket NetworkInteraction::Socket; // init Socket (because static)
 
+tgui::String NetworkInteraction::getNewClient()
+{
+    sf::Packet packet;
+    std::string newNicname;
+    if (Socket.receive(packet) != sf::Socket::Done)
+    {
+        std::cout << "Что то пошло не так в recieve=(" << std::endl;
+    }
+    packet >> newNicname;
+    return static_cast<tgui::String>(newNicname);
+}
+
 bool NetworkInteraction::connectToServer(tgui::String clientNickname) {
     sf::Packet packet;
     bool goodConnection = false;

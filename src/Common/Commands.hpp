@@ -6,7 +6,8 @@ enum Commands {
     NEW_MSG,
     REQUEST_NICKNAMES_LIST,
     REQUEST_LAST_MESSAGES,
-    REMOVE_CLIENT
+    REMOVE_CLIENT,
+    NEW_CLIENT
 };
 
 } // namespace chat

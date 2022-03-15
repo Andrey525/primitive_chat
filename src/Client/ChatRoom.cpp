@@ -11,11 +11,11 @@ ChatRoom::ChatRoom(tgui::String clientNickname) {
     ClientNickname = clientNickname;
     NicknameListBox->addItem(ClientNickname);
 
-    // std::list<tgui::String> membersOnlineNicknames =
-    //     NetworkInteraction::getListOfOnlineMembers();
-    // for (auto otherMemberNickname : membersOnlineNicknames) {
-    //     NicknameListBox->addItem(otherMemberNickname);
-    // }
+    std::list<tgui::String> membersOnlineNicknames =
+        NetworkInteraction::getListOfOnlineMembers();
+    for (auto otherMemberNickname : membersOnlineNicknames) {
+        NicknameListBox->addItem(otherMemberNickname);
+    }
 
     // std::list<MessageStruct> listOfAllMessages =
     //     NetworkInteraction::getListOfAllMessages();
@@ -85,6 +85,40 @@ void ChatRoom::setupEventHandlers() {
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
 }
 
+void ChatRoom::processNetworkTraffic()
+{
+    sf::Packet packet;
+    int operation;
+    NetworkInteraction::Socket.setBlocking(false);
+    if(NetworkInteraction::Socket.receive(packet) == sf::Socket::Done)
+    {
+        packet >> operation;
+        if (operation == NEW_CLIENT)
+        {
+            std::string nicknameNewClient;
+            packet >> nicknameNewClient;
+            NicknameListBox->addItem(static_cast<tgui::String>(nicknameNewClient));
+        }
+        else if(operation == REMOVE_CLIENT)
+        {
+            std::string nicknameRemoveClient;
+            packet >> nicknameRemoveClient;
+            NicknameListBox->removeItem(static_cast<tgui::String>(nicknameRemoveClient));    
+        }    
+        else if(operation == NEW_MSG)
+        {
+            std::string newMessage;
+            std::string nickname;
+            packet >> nickname >> newMessage;
+            ChatBox->addLine(static_cast<tgui::String>(nickname) + ": " + static_cast<tgui::String>(newMessage));
+        }
+        else
+        {
+            std::cout << "ЧТО ТЫ МНЕ ПРИСЛАЛ??" << std::endl;
+        }
+    }
+}
+
 void ChatRoom::chatRoomLoop() {
     while (Window.isOpen()) {
         sf::Event event;
@@ -93,6 +127,7 @@ void ChatRoom::chatRoomLoop() {
                 Window.close();
             }
             Gui.handleEvent(event);
+            processNetworkTraffic();
         }
         Window.clear();
         Gui.draw();

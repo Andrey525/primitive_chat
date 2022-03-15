@@ -28,6 +28,7 @@ class ChatRoom {
   public:
     ChatRoom(tgui::String clientNickname);
     void chatRoomLoop();
+    void processNetworkTraffic();
 };
 
 } // namespace chat
