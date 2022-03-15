@@ -103,6 +103,7 @@ void ChatRoom::processNetworkTraffic()
         {
             std::string nicknameRemoveClient;
             packet >> nicknameRemoveClient;
+            std::cout << "Я В УДАЛЕНИИИИ" << std::endl;
             NicknameListBox->removeItem(static_cast<tgui::String>(nicknameRemoveClient));    
         }    
         else if(operation == NEW_MSG)

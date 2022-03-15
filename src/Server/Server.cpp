@@ -11,47 +11,50 @@ Server::Server() {
 Server::~Server() {}
 
 void Server::accept() {
-    sf::Packet packet;
-    std::string nickname;
-    tgui::String tguiNickname;
+    while (true)
+    {
+        sf::Packet packet;
+        std::string nickname;
+        tgui::String tguiNickname;
 
-    OnlineUsers.emplace_back();
-    ClientStruct &client = OnlineUsers.back();
+        OnlineUsers.emplace_back();
+        ClientStruct &client = OnlineUsers.back();
 
-    if (Listener.accept(client.Socket) != sf::Socket::Done) {
-        std::cout << "Server Error: accpet\n";
-    }
-    if (client.Socket.receive(packet) != sf::Socket::Done) {
-        std::cout << "Server Error: accpet recv\n";
-    }
-    packet >> nickname;
-    tguiNickname = static_cast<tgui::String>(nickname);
-
-    const auto &itClient = std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
-                                        [&](const ClientStruct &st1) -> bool {
-                                            if (tguiNickname == st1.Nickname) {
-                                                return true;
-                                            }
-                                            return false;
-                                        });
-    packet.clear();
-    if (itClient != OnlineUsers.end()) { // не уникальное имя
-        std::cout << "Not unique name\n";
-        packet << false;
-        if (client.Socket.send(packet) != sf::Socket::Done) {
-            std::cout << "Server Error: send AllMessages\n";
+        if (Listener.accept(client.Socket) != sf::Socket::Done) {
+            std::cout << "Server Error: accpet\n";
         }
-        OnlineUsers.pop_back();
-        return;
-    } else { // уникальное имя
-        std::cout << "Unique name\n";
-        packet << true;
-        if (client.Socket.send(packet) != sf::Socket::Done) {
-            std::cout << "Server Error: send AllMessages\n";
+        if (client.Socket.receive(packet) != sf::Socket::Done) {
+            std::cout << "Server Error: accpet recv\n";
         }
-        client.Nickname = tguiNickname;
-        sendNicknameNewClientToOther(client.Nickname);
-        sendListOfOnlineMembers(client.Nickname);
+        packet >> nickname;
+        tguiNickname = static_cast<tgui::String>(nickname);
+
+        const auto &itClient = std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
+                                            [&](const ClientStruct &st1) -> bool {
+                                                if (tguiNickname == st1.Nickname) {
+                                                    return true;
+                                                }
+                                                return false;
+                                            });
+        packet.clear();
+        if (itClient != OnlineUsers.end()) { // не уникальное имя
+            std::cout << "Not unique name\n";
+            packet << false;
+            if (client.Socket.send(packet) != sf::Socket::Done) {
+                std::cout << "Server Error: send AllMessages\n";
+            }
+            OnlineUsers.pop_back();
+            return;
+        } else { // уникальное имя
+            std::cout << "Unique name\n";
+            packet << true;
+            if (client.Socket.send(packet) != sf::Socket::Done) {
+                std::cout << "Server Error: send AllMessages\n";
+            }
+            client.Nickname = tguiNickname;
+            sendNicknameNewClientToOther(client.Nickname);
+            sendListOfOnlineMembers(client.Nickname);
+        }
     }
 }
 
@@ -119,6 +122,35 @@ void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
     }
 }
 
+void Server::checkDisconectedUsers()
+{
+    sf::Packet packet;
+    packet << HELLO;    
+    for(auto &user : OnlineUsers)
+    {
+        if(user.Socket.send(packet) != sf::Socket::Done)
+        {
+            user.Isconected = false;
+            sendWhichUserHasRetired(user.Nickname);
+        }
+    }
+}
+
+void Server::sendWhichUserHasRetired(tgui::String nickname)
+{
+    sf::Packet packet;
+    packet << REMOVE_CLIENT << static_cast<std::string>(nickname);
+    for (auto &user : OnlineUsers) {
+        if (user.Isconected == false)
+        {
+            continue;
+        }
+        if (user.Socket.send(packet) != sf::Socket::Done) {
+            std::cout << "Server Error: send nickname to other\n";
+        }
+    }
+}
+
 void Server::sendMessageToOnlineUsers(MessageStruct msg) {
     sf::Packet packet;
     packet << static_cast<std::string>(msg.Nickname)
@@ -150,12 +182,14 @@ void Server::requestHandler(sf::Packet &packet, tgui::String whoseRequest) {
         packet >> nickname >> message;
         handleNewMessage(MessageStruct(static_cast<tgui::String>(nickname),
                                        static_cast<tgui::String>(message)));
-    } else if (command == REQUEST_NICKNAMES_LIST) {
-        sendListOfOnlineMembers(whoseRequest);
-    } else if (command == REQUEST_LAST_MESSAGES) {
-        sendListOfAllMessages(whoseRequest);
-    } else if (command == REMOVE_CLIENT) {
-        //.....
+    // } else if (command == REQUEST_NICKNAMES_LIST) {
+    //     sendListOfOnlineMembers(whoseRequest);
+    // } else if (command == REQUEST_LAST_MESSAGES) {
+    //     sendListOfAllMessages(whoseRequest);
+    // } else if (command == REMOVE_CLIENT) {
+    //     //.....
+    // }
+    whoseRequest.c_str();
     }
 }
 

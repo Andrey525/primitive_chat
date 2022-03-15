@@ -41,6 +41,9 @@ class Server {
     //получает пакет, в зависимости от команды правильно распаковывает пакет и
     //вызывает один из верхних методов
     void requestHandler(sf::Packet &packet, tgui::String whoseRequest);
+
+    void checkDisconectedUsers();
+    void sendWhichUserHasRetired(tgui::String user); 
 };
 
 } // namespace chat
