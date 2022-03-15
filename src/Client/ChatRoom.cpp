@@ -4,6 +4,28 @@
 namespace chat {
 
 ChatRoom::ChatRoom(tgui::String clientNickname) {
+
+    setupWindow();
+    setupEventHandlers();
+
+    ClientNickname = clientNickname;
+    NicknameListBox->addItem(ClientNickname);
+
+    // std::list<tgui::String> membersOnlineNicknames =
+    //     NetworkInteraction::getListOfOnlineMembers();
+    // for (auto otherMemberNickname : membersOnlineNicknames) {
+    //     NicknameListBox->addItem(otherMemberNickname);
+    // }
+
+    // std::list<MessageStruct> listOfAllMessages =
+    //     NetworkInteraction::getListOfAllMessages();
+    // for (auto messageStruct : listOfAllMessages) {
+    //     ChatBox->addLine(messageStruct.Nickname + ": " +
+    //     messageStruct.Message);
+    // }
+}
+
+void ChatRoom::setupWindow() {
     Window.create(sf::VideoMode(800, 600), "Chat-Client",
                   sf::Style::Titlebar | sf::Style::Close);
     Window.setFramerateLimit(60);
@@ -48,7 +70,9 @@ ChatRoom::ChatRoom(tgui::String clientNickname) {
     SendMessageButton->setText("Send");
     SendMessageButton->setTextSize(20);
     Gui.add(SendMessageButton);
+}
 
+void ChatRoom::setupEventHandlers() {
     MessageInputBox->onMouseEnter(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Text); });
     MessageInputBox->onMouseLeave(
@@ -59,28 +83,6 @@ ChatRoom::ChatRoom(tgui::String clientNickname) {
     SendMessageButton->onClick(&ChatRoom::sendMessage, this);
     SendMessageButton->onMouseLeave(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
-
-    ClientNickname = clientNickname;
-
-    // Init widgets' content
-    NicknameListBox->addItem(ClientNickname);
-
-    NetworkInteraction::connectToServer(ClientNickname);
-    
-    std::list<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
-                                                      "Vasiliy", "Solbon"};
-    // std::list<tgui::String> membersOnlineNicknames =
-    // NetworkInteraction::getListOfOnlineMembers();
-    for (auto otherMemberNickname : membersOnlineNicknames) {
-        NicknameListBox->addItem(otherMemberNickname);
-    }
-    std::list<MessageStruct> listOfAllMessages = {{"Andrey", "HELLO"},
-                                                  {"Solbon", "HEY"}};
-    // std::list<MessageStruct> listOfAllMessages =
-    // NetworkInteraction::getListOfAllMessages();
-    for (auto messageStruct : listOfAllMessages) {
-        ChatBox->addLine(messageStruct.Nickname + ": " + messageStruct.Message);
-    }
 }
 
 void ChatRoom::chatRoomLoop() {

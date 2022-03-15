@@ -21,10 +21,13 @@ class ChatRoom {
     tgui::Button::Ptr SendMessageButton;
     tgui::String ClientNickname;
 
+    void setupWindow();
+    void setupEventHandlers();
+    void sendMessage();
+
   public:
     ChatRoom(tgui::String clientNickname);
     void chatRoomLoop();
-    void sendMessage();
 };
 
 } // namespace chat

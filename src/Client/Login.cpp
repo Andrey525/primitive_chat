@@ -3,6 +3,11 @@
 namespace chat {
 
 Login::Login() {
+    setupWindow();
+    setupEventHandlers();
+}
+
+void Login::setupWindow() {
     Window.create(sf::VideoMode(400, 300), "Login",
                   sf::Style::Titlebar | sf::Style::Close);
     Window.setFramerateLimit(60);
@@ -39,7 +44,9 @@ Login::Login() {
     ConfirmButton->setTextSize(20);
     ConfirmButton->setPosition(100, 190);
     Gui.add(ConfirmButton);
+}
 
+void Login::setupEventHandlers() {
     NicknameInputBox->onMouseEnter(
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Text); });
     NicknameInputBox->onMouseLeave(
@@ -72,24 +79,24 @@ tgui::String Login::loginLoop() {
 }
 
 void Login::checkClientNickname() {
-    std::list<tgui::String> membersOnlineNicknames = {"Andrey", "Ivan",
-                                                      "Vasiliy", "Solbon"};
-    // std::list<tgui::String> membersOnlineNicknames =
-    // NetworkInteraction::getListOfOnlineMembers();
-    if (NicknameInputBox->getText().length() > 0 &&
-        NicknameInputBox->getText().length() < MAX_SIZE_LENGHT_NAME) {
-        for (auto otherMemberNickname : membersOnlineNicknames) {
-            if (NicknameInputBox->getText() == otherMemberNickname) {
-                Label->setText("Nickname is taken...");
-                NicknameInputBox->setText("");
-                return;
-            }
-        }
-        ClientNickname = NicknameInputBox->getText();
-        GoodAvtorization = true;
-    } else {
+    if (NicknameInputBox->getText().length() == 0 ||
+        NicknameInputBox->getText().length() > MAX_SIZE_LENGHT_NAME) {
         Label->setText("Nickname's length must be between 1 and 10 chars...");
         NicknameInputBox->setText("");
+        return;
+    }
+
+    GoodAvtorization =
+        NetworkInteraction::connectToServer(NicknameInputBox->getText());
+    if (GoodAvtorization == true) {
+        std::cout << "Good avtorization\n";
+        ClientNickname = NicknameInputBox->getText();
+        return;
+    } else {
+        std::cout << "Bad avtorization\n";
+        Label->setText("Nickname is taken...");
+        NicknameInputBox->setText("");
+        return;
     }
 }
 

@@ -12,17 +12,35 @@ class Server {
     std::list<MessageStruct> AllMessages;
     sf::TcpListener Listener;
     size_t MAX_COUNT_MESSAGES = 1024;
+
   public:
-    Server(/* args */);
+    // активирует Listener'a
+    Server();
     ~Server();
 
+    // проверяет, есть ли имя клиента в списке имен и устанавливает связь с
+    // клиентом. если проверки уникальности имени прошли, то добавляем клиента в
+    // список участников и вызывает sendNicknameNewClientToOther
     void accept();
-    void sendNicknameNewClient(tgui::String nickname);
-    void sendListOfAllMessages(tgui::String nickname);
-    void sendListOfOnlineMembers(tgui::String nickname);
+
+    //отправляет имя whatNickname всем остальным клиентам
+    void sendNicknameNewClientToOther(tgui::String whatNickname);
+
+    // отправляет список собщений клиенту с именем nicknameToWhom
+    void sendListOfAllMessages(tgui::String nicknameToWhom);
+
+    // отправляет список участников клиенту с именем nicknameToWhom
+    void sendListOfOnlineMembers(tgui::String nicknameToWhom);
+
+    // рассылает всем, кроме отправителя, данное сообщение
     void sendMessageToOnlineUsers(MessageStruct msg);
-    MessageStruct receiveMessage();
-    
+
+    //добавляет сообщение в список и потом вызывает sendMessageToOnlineUsers
+    void handleNewMessage(MessageStruct msg);
+
+    //получает пакет, в зависимости от команды правильно распаковывает пакет и
+    //вызывает один из верхних методов
+    void requestHandler(sf::Packet &packet, tgui::String whoseRequest);
 };
 
 } // namespace chat
