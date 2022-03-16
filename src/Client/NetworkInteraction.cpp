@@ -4,16 +4,6 @@ namespace chat {
 
 sf::TcpSocket NetworkInteraction::Socket; // init Socket (because static)
 
-tgui::String NetworkInteraction::getNewClient() {
-    sf::Packet packet;
-    std::string newNicname;
-    if (Socket.receive(packet) != sf::Socket::Done) {
-        std::cout << "Что то пошло не так в recieve=(" << std::endl;
-    }
-    packet >> newNicname;
-    return static_cast<tgui::String>(newNicname);
-}
-
 bool NetworkInteraction::connectToServer(tgui::String clientNickname) {
     sf::Packet packet;
     bool goodConnection = false;
@@ -69,11 +59,6 @@ void NetworkInteraction::sendMSG(tgui::String msg, tgui::String nickname) {
     }
 }
 
-MessageStruct NetworkInteraction::recvMSG() {
-    MessageStruct recvMessage;
-    return recvMessage;
-}
-
 std::list<tgui::String> NetworkInteraction::getListOfOnlineMembers() {
     std::list<tgui::String> nicknames;
     sf::Packet packet;
@@ -94,6 +79,44 @@ std::list<tgui::String> NetworkInteraction::getListOfOnlineMembers() {
         nicknames.push_back(static_cast<tgui::String>(nickname));
     }
     return nicknames;
+}
+
+std::pair<int, tgui::String>
+NetworkInteraction::processReceivedNetworkTraffic() {
+    sf::Packet packet;
+    int operation;
+    sf::Socket::Status status;
+    status = NetworkInteraction::Socket.receive(packet);
+    if (status == sf::Socket::Done) {
+        std::cout << "Пакет прибыл! Статус Done\n";
+        packet >> operation;
+        if (operation == NEW_CLIENT) {
+            std::string nicknameNewClient;
+            packet >> nicknameNewClient;
+            return std::make_pair(operation, nicknameNewClient);
+        } else if (operation == REMOVE_CLIENT) {
+            std::string nicknameRemovedClient;
+            packet >> nicknameRemovedClient;
+            return std::make_pair(operation, nicknameRemovedClient);
+
+        } else if (operation == NEW_MSG) {
+            std::string newMessage;
+            std::string nickname;
+            tgui::String mergedLine;
+            packet >> nickname >> newMessage;
+            mergedLine = static_cast<tgui::String>(nickname) + ": " +
+                         static_cast<tgui::String>(newMessage);
+            return std::make_pair(operation, mergedLine);
+        } else if (operation == HELLO) {
+            return std::make_pair(operation, "Hello packet");
+        } else {
+            std::cout << "ЧТО ТЫ МНЕ ПРИСЛАЛ??" << std::endl;
+        }
+    } else if (status == sf::Socket::Disconnected) {
+        return std::make_pair(DISCONNECT,
+                              static_cast<tgui::String>("Disconnect"));
+    }
+    return std::make_pair(-1, static_cast<tgui::String>("Error"));
 }
 
 } // namespace chat

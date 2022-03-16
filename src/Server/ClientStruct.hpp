@@ -7,7 +7,6 @@ namespace chat {
 struct ClientStruct {
     sf::TcpSocket Socket;
     tgui::String Nickname;
-    bool Isconected = true;
 };
 
 } // namespace chat

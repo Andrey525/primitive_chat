@@ -10,6 +10,9 @@
 namespace chat {
 
 class ChatRoom {
+
+    friend class NetworkInteraction;
+
   private:
     sf::RenderWindow Window;
     tgui::Gui Gui;
@@ -20,15 +23,20 @@ class ChatRoom {
     tgui::ListBox::Ptr NicknameListBox;
     tgui::Button::Ptr SendMessageButton;
     tgui::String ClientNickname;
+    bool IsStart = false;
+    bool IsEnd = false;
 
     void setupWindow();
     void setupEventHandlers();
     void sendMessage();
+    void addNewMessage(tgui::String mergedLine);
+    void addNewClient(tgui::String nicknameNewClient);
+    void removeClient(tgui::String nicknameRemovedClient);
+    void startProcessReceivingNetworkTraffic();
 
   public:
     ChatRoom(tgui::String clientNickname);
     void chatRoomLoop();
-    void processNetworkTraffic();
 };
 
 } // namespace chat

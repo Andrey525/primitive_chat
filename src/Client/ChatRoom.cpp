@@ -22,6 +22,8 @@ ChatRoom::ChatRoom(tgui::String clientNickname) {
     for (auto messageStruct : listOfAllMessages) {
         ChatBox->addLine(messageStruct.Nickname + ": " + messageStruct.Message);
     }
+
+    IsStart = true;
 }
 
 void ChatRoom::setupWindow() {
@@ -84,44 +86,23 @@ void ChatRoom::setupEventHandlers() {
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
 }
 
-void ChatRoom::processNetworkTraffic() {
-    sf::Packet packet;
-    int operation;
-    NetworkInteraction::Socket.setBlocking(false);
-    if (NetworkInteraction::Socket.receive(packet) == sf::Socket::Done) {
-        packet >> operation;
-        if (operation == NEW_CLIENT) {
-            std::string nicknameNewClient;
-            packet >> nicknameNewClient;
-            NicknameListBox->addItem(
-                static_cast<tgui::String>(nicknameNewClient));
-        } else if (operation == REMOVE_CLIENT) {
-            std::string nicknameRemoveClient;
-            packet >> nicknameRemoveClient;
-            std::cout << "Я В УДАЛЕНИИИИ" << std::endl;
-            NicknameListBox->removeItem(
-                static_cast<tgui::String>(nicknameRemoveClient));
-        } else if (operation == NEW_MSG) {
-            std::string newMessage;
-            std::string nickname;
-            packet >> nickname >> newMessage;
-            ChatBox->addLine(static_cast<tgui::String>(nickname) + ": " +
-                             static_cast<tgui::String>(newMessage));
-        } else {
-            std::cout << "ЧТО ТЫ МНЕ ПРИСЛАЛ??" << std::endl;
-        }
-    }
-}
-
 void ChatRoom::chatRoomLoop() {
+    sf::Thread thread(&chat::ChatRoom::startProcessReceivingNetworkTraffic,
+                      this);
+    thread.launch();
     while (Window.isOpen()) {
+
+        if (IsEnd == true) {
+            Window.close();
+        }
+
         sf::Event event;
         while (Window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 Window.close();
+                thread.terminate();
             }
             Gui.handleEvent(event);
-            processNetworkTraffic();
         }
         Window.clear();
         Gui.draw();
@@ -136,6 +117,50 @@ void ChatRoom::sendMessage() {
         ChatBox->addLine(ClientNickname + ": " + temp);
         MessageInputBox->setText("");
         NetworkInteraction::sendMSG(temp, ClientNickname);
+    }
+}
+
+void ChatRoom::addNewMessage(tgui::String mergedLine) {
+    ChatBox->addLine(mergedLine);
+}
+
+void ChatRoom::addNewClient(tgui::String nicknameNewClient) {
+    NicknameListBox->addItem(nicknameNewClient);
+}
+
+void ChatRoom::removeClient(tgui::String nicknameRemovedClient) {
+    NicknameListBox->removeItem(nicknameRemovedClient);
+}
+
+void ChatRoom::startProcessReceivingNetworkTraffic() {
+    while (!IsStart) {
+        //ожидание начала работы приема сообщений
+    }
+    while (1) {
+
+        std::pair<int, tgui::String> pair =
+            NetworkInteraction::processReceivedNetworkTraffic();
+        switch (pair.first) {
+        case NEW_CLIENT:
+            addNewClient(pair.second);
+            break;
+        case REMOVE_CLIENT:
+            removeClient(pair.second);
+            break;
+        case NEW_MSG:
+            addNewMessage(pair.second);
+            break;
+        case HELLO:
+            break;
+        case DISCONNECT:
+            IsEnd = true;
+            std::cout << "Disconected\n";
+            return;
+            break;
+        default:
+            std::cout << static_cast<std::string>(pair.second) << '\n';
+            break;
+        }
     }
 }
 

@@ -14,6 +14,8 @@ class Server {
     sf::TcpListener Listener;
     size_t MAX_COUNT_MESSAGES = 1024;
 
+    sf::Mutex Mutex;
+
   public:
     // активирует Listener'a
     Server();
@@ -41,7 +43,7 @@ class Server {
 
     //получает пакет, в зависимости от команды правильно распаковывает пакет и
     //вызывает один из верхних методов
-    void requestHandler(sf::Packet &packet, tgui::String whoseRequest);
+    void requestHandler(sf::Packet &packet);
 
     void checkDisconectedUsers();
     void sendWhichUserHasRetired(tgui::String user);

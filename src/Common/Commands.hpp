@@ -8,7 +8,8 @@ enum Commands {
     NEW_MSG,
     NEW_CLIENT,
     REMOVE_CLIENT,
-    HELLO
+    HELLO,
+    DISCONNECT
 };
 
 } // namespace chat

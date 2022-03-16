@@ -44,7 +44,7 @@ void Server::accept() {
                 std::cout << "Server Error: send AllMessages\n";
             }
             OnlineUsers.pop_back();
-            return;
+            continue;
         } else { // уникальное имя
             std::cout << "Unique name\n";
             packet << true;
@@ -94,7 +94,6 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
                          return false;
                      });
 
-    // возможно size надо на один меньше делать, из-за accept'а
     packet << static_cast<uint32_t>(OnlineUsers.size() - 1);
 
     std::for_each(OnlineUsers.begin(), OnlineUsers.end(),
@@ -110,14 +109,16 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
 }
 
 void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
-    sf::Packet packet;
-    packet << NEW_CLIENT << static_cast<std::string>(whatNickname);
-    for (auto &user : OnlineUsers) {
-        if (whatNickname == user.Nickname) {
-            continue;
-        }
-        if (user.Socket.send(packet) != sf::Socket::Done) {
-            std::cout << "Server Error: send nickname to other\n";
+    if (OnlineUsers.size() > 1) {
+        sf::Packet packet;
+        packet << NEW_CLIENT << static_cast<std::string>(whatNickname);
+        for (auto &user : OnlineUsers) {
+            if (whatNickname == user.Nickname) {
+                continue;
+            }
+            if (user.Socket.send(packet) != sf::Socket::Done) {
+                std::cout << "Server Error: send nickname to other\n";
+            }
         }
     }
 }
@@ -125,10 +126,15 @@ void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
 void Server::checkDisconectedUsers() {
     sf::Packet packet;
     packet << HELLO;
-    for (auto &user : OnlineUsers) {
-        if (user.Socket.send(packet) != sf::Socket::Done) {
-            user.Isconected = false;
-            sendWhichUserHasRetired(user.Nickname);
+    auto it_last = OnlineUsers.end();
+    it_last--;
+    for (auto it = OnlineUsers.begin(); it != it_last;) {
+        if (it->Socket.send(packet) == sf::Socket::Disconnected) {
+            sendWhichUserHasRetired(it->Nickname);
+            it = OnlineUsers.erase(it);
+            std::cout << "Element was erased!\n";
+        } else {
+            it++;
         }
     }
 }
@@ -136,11 +142,13 @@ void Server::checkDisconectedUsers() {
 void Server::sendWhichUserHasRetired(tgui::String nickname) {
     sf::Packet packet;
     packet << REMOVE_CLIENT << static_cast<std::string>(nickname);
-    for (auto &user : OnlineUsers) {
-        if (user.Isconected == false) {
+    auto it_last = OnlineUsers.end();
+    it_last--;
+    for (auto it = OnlineUsers.begin(); it != it_last; it++) {
+        if (it->Nickname == nickname) {
             continue;
         }
-        if (user.Socket.send(packet) != sf::Socket::Done) {
+        if (it->Socket.send(packet) != sf::Socket::Done) {
             std::cout << "Server Error: send nickname to other\n";
         }
     }
@@ -168,7 +176,7 @@ void Server::handleNewMessage(MessageStruct msg) {
     sendMessageToOnlineUsers(msg);
 }
 
-void Server::requestHandler(sf::Packet &packet, tgui::String whoseRequest) {
+void Server::requestHandler(sf::Packet &packet) {
     int command;
     packet >> command;
     if (command == NEW_MSG) {
@@ -177,14 +185,6 @@ void Server::requestHandler(sf::Packet &packet, tgui::String whoseRequest) {
         packet >> nickname >> message;
         handleNewMessage(MessageStruct(static_cast<tgui::String>(nickname),
                                        static_cast<tgui::String>(message)));
-        // } else if (command == REQUEST_NICKNAMES_LIST) {
-        //     sendListOfOnlineMembers(whoseRequest);
-        // } else if (command == REQUEST_LAST_MESSAGES) {
-        //     sendListOfAllMessages(whoseRequest);
-        // } else if (command == REMOVE_CLIENT) {
-        //     //.....
-        // }
-        whoseRequest.c_str();
     }
 }
 
