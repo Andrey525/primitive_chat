@@ -95,8 +95,9 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
                      });
 
     packet << static_cast<uint32_t>(OnlineUsers.size() - 1);
-
-    std::for_each(OnlineUsers.begin(), OnlineUsers.end(),
+    auto it_last = OnlineUsers.end();
+    it_last--;
+    std::for_each(OnlineUsers.begin(), it_last,
                   [&packet, &itClient](const ClientStruct &client) {
                       if (itClient->Nickname != client.Nickname) {
                           packet << static_cast<std::string>(client.Nickname);
@@ -112,11 +113,13 @@ void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
     if (OnlineUsers.size() > 1) {
         sf::Packet packet;
         packet << NEW_CLIENT << static_cast<std::string>(whatNickname);
-        for (auto &user : OnlineUsers) {
-            if (whatNickname == user.Nickname) {
+        auto it_last = OnlineUsers.end();
+        it_last--;
+        for (auto it = OnlineUsers.begin(); it != it_last; it++) {
+            if (whatNickname == it->Nickname) {
                 continue;
             }
-            if (user.Socket.send(packet) != sf::Socket::Done) {
+            if (it->Socket.send(packet) != sf::Socket::Done) {
                 std::cout << "Server Error: send nickname to other\n";
             }
         }
@@ -158,11 +161,14 @@ void Server::sendMessageToOnlineUsers(MessageStruct msg) {
     sf::Packet packet;
     packet << NEW_MSG << static_cast<std::string>(msg.Nickname)
            << static_cast<std::string>(msg.Message);
-    for (auto &user : OnlineUsers) {
-        if (msg.Nickname == user.Nickname) {
+    std::cout << "sendMessageToOnlineUsers" << std::endl;
+    auto it_last = OnlineUsers.end();
+    it_last--;
+    for (auto it = OnlineUsers.begin(); it != it_last; it++) {
+        if (msg.Nickname == it->Nickname) {
             continue;
         }
-        if (user.Socket.send(packet) != sf::Socket::Done) {
+        if (it->Socket.send(packet) != sf::Socket::Done) {
             std::cout << "Server Error: send message to online users\n";
         }
     }
@@ -170,21 +176,38 @@ void Server::sendMessageToOnlineUsers(MessageStruct msg) {
 
 void Server::handleNewMessage(MessageStruct msg) {
     AllMessages.push_back(msg);
+    std::cout << "handleNewMessage" << std::endl;
     if (AllMessages.size() == MAX_COUNT_MESSAGES) {
         AllMessages.pop_front();
     }
     sendMessageToOnlineUsers(msg);
 }
 
-void Server::requestHandler(sf::Packet &packet) {
-    int command;
-    packet >> command;
-    if (command == NEW_MSG) {
-        std::string nickname;
-        std::string message;
-        packet >> nickname >> message;
-        handleNewMessage(MessageStruct(static_cast<tgui::String>(nickname),
-                                       static_cast<tgui::String>(message)));
+void Server::requestHandler() {
+    while (true)
+    {
+          sf::Packet packet;
+          auto it_last = OnlineUsers.end();
+          it_last--; 
+          std::string nickname;
+          std::string newMessage;
+          for (auto it = OnlineUsers.begin(); it != it_last; it++)
+          {
+              
+              if (it->Socket.receive(packet) != sf::Socket::Done)
+              {
+                  std::cout << "Не удалось получить пакет" << std::endl;
+              }
+              int command;
+              packet >> command;
+              if (command == NEW_MSG) {
+              std::string nickname;
+              std::string message;
+              packet >> nickname >> message;
+              handleNewMessage(MessageStruct(static_cast<tgui::String>(nickname),
+                                             static_cast<tgui::String>(message)));
+          }
+          }
     }
 }
 

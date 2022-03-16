@@ -43,7 +43,7 @@ class Server {
 
     //получает пакет, в зависимости от команды правильно распаковывает пакет и
     //вызывает один из верхних методов
-    void requestHandler(sf::Packet &packet);
+    void requestHandler();
 
     void checkDisconectedUsers();
     void sendWhichUserHasRetired(tgui::String user);
