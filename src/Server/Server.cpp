@@ -37,6 +37,7 @@ void Server::accept() {
                              return false;
                          });
         packet.clear();
+
         if (itClient != OnlineUsers.end()) { // не уникальное имя
             std::cout << "Not unique name\n";
             packet << false;
@@ -61,6 +62,7 @@ void Server::accept() {
 
 void Server::sendListOfAllMessages(tgui::String nicknameToWhom) {
     sf::Packet packet;
+    sf::Socket::Status status;
     const auto &itClient =
         std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
                      [&](const ClientStruct &st1) -> bool {
@@ -77,14 +79,17 @@ void Server::sendListOfAllMessages(tgui::String nicknameToWhom) {
                       packet << static_cast<std::string>(messageStruct.Nickname)
                              << static_cast<std::string>(messageStruct.Message);
                   });
-
-    if (itClient->Socket.send(packet) != sf::Socket::Done) {
+    Mutex.lock();
+    status = itClient->Socket.send(packet);
+    Mutex.unlock();
+    if (status != sf::Socket::Done) {
         std::cout << "Server Error: send AllMessages\n";
     }
 }
 
 void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
     sf::Packet packet;
+    sf::Socket::Status status;
     const auto &itClient =
         std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
                      [&](const ClientStruct &st1) -> bool {
@@ -103,8 +108,10 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
                           packet << static_cast<std::string>(client.Nickname);
                       }
                   });
-
-    if (itClient->Socket.send(packet) != sf::Socket::Done) {
+    Mutex.lock();
+    status = itClient->Socket.send(packet);
+    Mutex.unlock();
+    if (status != sf::Socket::Done) {
         std::cout << "Server Error: send OnlineMembers\n";
     }
 }
@@ -112,6 +119,7 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
 void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
     if (OnlineUsers.size() > 1) {
         sf::Packet packet;
+        sf::Socket::Status status;
         packet << NEW_CLIENT << static_cast<std::string>(whatNickname);
         auto it_last = OnlineUsers.end();
         it_last--;
@@ -119,7 +127,10 @@ void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
             if (whatNickname == it->Nickname) {
                 continue;
             }
-            if (it->Socket.send(packet) != sf::Socket::Done) {
+            Mutex.lock();
+            status = it->Socket.send(packet);
+            Mutex.unlock();
+            if (status != sf::Socket::Done) {
                 std::cout << "Server Error: send nickname to other\n";
             }
         }
@@ -128,11 +139,15 @@ void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
 
 void Server::checkDisconectedUsers() {
     sf::Packet packet;
+    sf::Socket::Status status;
     packet << HELLO;
     auto it_last = OnlineUsers.end();
     it_last--;
     for (auto it = OnlineUsers.begin(); it != it_last;) {
-        if (it->Socket.send(packet) == sf::Socket::Disconnected) {
+        Mutex.lock();
+        status = it->Socket.send(packet);
+        Mutex.unlock();
+        if (status == sf::Socket::Disconnected) {
             sendWhichUserHasRetired(it->Nickname);
             it = OnlineUsers.erase(it);
             std::cout << "Element was erased!\n";
@@ -144,6 +159,7 @@ void Server::checkDisconectedUsers() {
 
 void Server::sendWhichUserHasRetired(tgui::String nickname) {
     sf::Packet packet;
+    sf::Socket::Status status;
     packet << REMOVE_CLIENT << static_cast<std::string>(nickname);
     auto it_last = OnlineUsers.end();
     it_last--;
@@ -151,7 +167,10 @@ void Server::sendWhichUserHasRetired(tgui::String nickname) {
         if (it->Nickname == nickname) {
             continue;
         }
-        if (it->Socket.send(packet) != sf::Socket::Done) {
+        Mutex.lock();
+        status = it->Socket.send(packet);
+        Mutex.unlock();
+        if (status != sf::Socket::Done) {
             std::cout << "Server Error: send nickname to other\n";
         }
     }
@@ -159,16 +178,19 @@ void Server::sendWhichUserHasRetired(tgui::String nickname) {
 
 void Server::sendMessageToOnlineUsers(MessageStruct msg) {
     sf::Packet packet;
+    sf::Socket::Status status;
     packet << NEW_MSG << static_cast<std::string>(msg.Nickname)
            << static_cast<std::string>(msg.Message);
-    std::cout << "sendMessageToOnlineUsers" << std::endl;
     auto it_last = OnlineUsers.end();
     it_last--;
     for (auto it = OnlineUsers.begin(); it != it_last; it++) {
         if (msg.Nickname == it->Nickname) {
             continue;
         }
-        if (it->Socket.send(packet) != sf::Socket::Done) {
+        Mutex.lock();
+        status = it->Socket.send(packet);
+        Mutex.unlock();
+        if (status != sf::Socket::Done) {
             std::cout << "Server Error: send message to online users\n";
         }
     }
@@ -176,7 +198,6 @@ void Server::sendMessageToOnlineUsers(MessageStruct msg) {
 
 void Server::handleNewMessage(MessageStruct msg) {
     AllMessages.push_back(msg);
-    std::cout << "handleNewMessage" << std::endl;
     if (AllMessages.size() == MAX_COUNT_MESSAGES) {
         AllMessages.pop_front();
     }
@@ -184,30 +205,39 @@ void Server::handleNewMessage(MessageStruct msg) {
 }
 
 void Server::requestHandler() {
-    while (true)
-    {
-          sf::Packet packet;
-          auto it_last = OnlineUsers.end();
-          it_last--; 
-          std::string nickname;
-          std::string newMessage;
-          for (auto it = OnlineUsers.begin(); it != it_last; it++)
-          {
-              
-              if (it->Socket.receive(packet) != sf::Socket::Done)
-              {
-                  std::cout << "Не удалось получить пакет" << std::endl;
-              }
-              int command;
-              packet >> command;
-              if (command == NEW_MSG) {
-              std::string nickname;
-              std::string message;
-              packet >> nickname >> message;
-              handleNewMessage(MessageStruct(static_cast<tgui::String>(nickname),
-                                             static_cast<tgui::String>(message)));
-          }
-          }
+    while (true) {
+        sf::Packet packet;
+        sf::Socket::Status status;
+        auto it_last = OnlineUsers.end();
+        it_last--;
+        std::string nickname;
+        std::string newMessage;
+        for (auto it = OnlineUsers.begin(); it != it_last; it++) {
+            Mutex.lock();
+            it->Socket.setBlocking(false);
+            status = it->Socket.receive(packet);
+            it->Socket.setBlocking(true);
+            Mutex.unlock();
+            if (status == sf::Socket::Done) {
+                int command;
+                packet >> command;
+                if (command == NEW_MSG) {
+                    std::string nickname;
+                    std::string message;
+                    packet >> nickname >> message;
+                    handleNewMessage(
+                        MessageStruct(static_cast<tgui::String>(nickname),
+                                      static_cast<tgui::String>(message)));
+                }
+            } else if (status == sf::Socket::NotReady) {
+
+            } else if (status == sf::Socket::Disconnected) {
+
+            } else if (status == sf::Socket::Error) {
+                std::cout << "Error, can't get packet!\n";
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 

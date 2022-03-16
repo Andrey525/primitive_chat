@@ -3,14 +3,14 @@
 #include <MessageStruct.hpp>
 #include <iostream>
 #include <list>
+#include <thread>
 
 namespace chat {
 
 class Server {
   private:
     std::list<ClientStruct> OnlineUsers;
-    std::list<MessageStruct> AllMessages{{"Andrey", "Message 1"},
-                                         {"Dima", "Message 2"}};
+    std::list<MessageStruct> AllMessages;
     sf::TcpListener Listener;
     size_t MAX_COUNT_MESSAGES = 1024;
 

@@ -1,6 +1,5 @@
 #include <Server.hpp>
 #include <iostream>
-#include <thread>
 
 int main() {
     chat::Server server;
@@ -9,9 +8,8 @@ int main() {
     thread.launch();
     threadForMessage.launch();
     while (1) {
-        // server.accept();
         server.checkDisconectedUsers();
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     return 0;
