@@ -17,12 +17,11 @@ ChatRoom::ChatRoom(tgui::String clientNickname) {
         NicknameListBox->addItem(otherMemberNickname);
     }
 
-    // std::list<MessageStruct> listOfAllMessages =
-    //     NetworkInteraction::getListOfAllMessages();
-    // for (auto messageStruct : listOfAllMessages) {
-    //     ChatBox->addLine(messageStruct.Nickname + ": " +
-    //     messageStruct.Message);
-    // }
+    std::list<MessageStruct> listOfAllMessages =
+        NetworkInteraction::getListOfAllMessages();
+    for (auto messageStruct : listOfAllMessages) {
+        ChatBox->addLine(messageStruct.Nickname + ": " + messageStruct.Message);
+    }
 }
 
 void ChatRoom::setupWindow() {
@@ -85,36 +84,30 @@ void ChatRoom::setupEventHandlers() {
         [&]() { Gui.setOverrideMouseCursor(tgui::Cursor::Type::Arrow); });
 }
 
-void ChatRoom::processNetworkTraffic()
-{
+void ChatRoom::processNetworkTraffic() {
     sf::Packet packet;
     int operation;
     NetworkInteraction::Socket.setBlocking(false);
-    if(NetworkInteraction::Socket.receive(packet) == sf::Socket::Done)
-    {
+    if (NetworkInteraction::Socket.receive(packet) == sf::Socket::Done) {
         packet >> operation;
-        if (operation == NEW_CLIENT)
-        {
+        if (operation == NEW_CLIENT) {
             std::string nicknameNewClient;
             packet >> nicknameNewClient;
-            NicknameListBox->addItem(static_cast<tgui::String>(nicknameNewClient));
-        }
-        else if(operation == REMOVE_CLIENT)
-        {
+            NicknameListBox->addItem(
+                static_cast<tgui::String>(nicknameNewClient));
+        } else if (operation == REMOVE_CLIENT) {
             std::string nicknameRemoveClient;
             packet >> nicknameRemoveClient;
             std::cout << "Я В УДАЛЕНИИИИ" << std::endl;
-            NicknameListBox->removeItem(static_cast<tgui::String>(nicknameRemoveClient));    
-        }    
-        else if(operation == NEW_MSG)
-        {
+            NicknameListBox->removeItem(
+                static_cast<tgui::String>(nicknameRemoveClient));
+        } else if (operation == NEW_MSG) {
             std::string newMessage;
             std::string nickname;
             packet >> nickname >> newMessage;
-            ChatBox->addLine(static_cast<tgui::String>(nickname) + ": " + static_cast<tgui::String>(newMessage));
-        }
-        else
-        {
+            ChatBox->addLine(static_cast<tgui::String>(nickname) + ": " +
+                             static_cast<tgui::String>(newMessage));
+        } else {
             std::cout << "ЧТО ТЫ МНЕ ПРИСЛАЛ??" << std::endl;
         }
     }

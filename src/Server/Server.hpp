@@ -9,7 +9,8 @@ namespace chat {
 class Server {
   private:
     std::list<ClientStruct> OnlineUsers;
-    std::list<MessageStruct> AllMessages;
+    std::list<MessageStruct> AllMessages{{"Andrey", "Message 1"},
+                                         {"Dima", "Message 2"}};
     sf::TcpListener Listener;
     size_t MAX_COUNT_MESSAGES = 1024;
 
@@ -43,7 +44,7 @@ class Server {
     void requestHandler(sf::Packet &packet, tgui::String whoseRequest);
 
     void checkDisconectedUsers();
-    void sendWhichUserHasRetired(tgui::String user); 
+    void sendWhichUserHasRetired(tgui::String user);
 };
 
 } // namespace chat

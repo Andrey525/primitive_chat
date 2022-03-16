@@ -4,12 +4,10 @@ namespace chat {
 
 sf::TcpSocket NetworkInteraction::Socket; // init Socket (because static)
 
-tgui::String NetworkInteraction::getNewClient()
-{
+tgui::String NetworkInteraction::getNewClient() {
     sf::Packet packet;
     std::string newNicname;
-    if (Socket.receive(packet) != sf::Socket::Done)
-    {
+    if (Socket.receive(packet) != sf::Socket::Done) {
         std::cout << "Что то пошло не так в recieve=(" << std::endl;
     }
     packet >> newNicname;
@@ -44,10 +42,11 @@ std::list<MessageStruct> NetworkInteraction::getListOfAllMessages() {
     uint32_t countAllMessages;
     std::string nickname;
     std::string message;
-    packet << REQUEST_LAST_MESSAGES;
-    if (Socket.send(packet) != sf::Socket::Done) {
-        std::cout << "Error send REQUEST_LAST_MESSAGES\n";
-    }
+    // packet << REQUEST_LAST_MESSAGES;
+    // if (Socket.send(packet) != sf::Socket::Done) {
+    //     std::cout << "Error send REQUEST_LAST_MESSAGES\n";
+    // }
+    // packet.clear();
     if (Socket.receive(packet) != sf::Socket::Done) {
         std::cout << "Error receive LAST_MESSAGES\n";
     }
@@ -80,10 +79,11 @@ std::list<tgui::String> NetworkInteraction::getListOfOnlineMembers() {
     sf::Packet packet;
     uint32_t countMembers;
     std::string nickname;
-    packet << REQUEST_NICKNAMES_LIST;
-    if (Socket.send(packet) != sf::Socket::Done) {
-        std::cout << "Error send REQUEST_NICKNAMES_LIST\n";
-    }
+    // packet << REQUEST_NICKNAMES_LIST;
+    // if (Socket.send(packet) != sf::Socket::Done) {
+    // std::cout << "Error send REQUEST_NICKNAMES_LIST\n";
+    // }
+    // packet.clear();
     if (Socket.receive(packet) != sf::Socket::Done) {
         std::cout << "Error receive NICKNAMES_LIST\n";
     }

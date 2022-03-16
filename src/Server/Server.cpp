@@ -11,8 +11,7 @@ Server::Server() {
 Server::~Server() {}
 
 void Server::accept() {
-    while (true)
-    {
+    while (true) {
         sf::Packet packet;
         std::string nickname;
         tgui::String tguiNickname;
@@ -29,13 +28,14 @@ void Server::accept() {
         packet >> nickname;
         tguiNickname = static_cast<tgui::String>(nickname);
 
-        const auto &itClient = std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
-                                            [&](const ClientStruct &st1) -> bool {
-                                                if (tguiNickname == st1.Nickname) {
-                                                    return true;
-                                                }
-                                                return false;
-                                            });
+        const auto &itClient =
+            std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
+                         [&](const ClientStruct &st1) -> bool {
+                             if (tguiNickname == st1.Nickname) {
+                                 return true;
+                             }
+                             return false;
+                         });
         packet.clear();
         if (itClient != OnlineUsers.end()) { // не уникальное имя
             std::cout << "Not unique name\n";
@@ -54,6 +54,7 @@ void Server::accept() {
             client.Nickname = tguiNickname;
             sendNicknameNewClientToOther(client.Nickname);
             sendListOfOnlineMembers(client.Nickname);
+            sendListOfAllMessages(client.Nickname);
         }
     }
 }
@@ -97,11 +98,10 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
     packet << static_cast<uint32_t>(OnlineUsers.size() - 1);
 
     std::for_each(OnlineUsers.begin(), OnlineUsers.end(),
-                    [&packet, &itClient](const ClientStruct &client) {
-                        if (itClient->Nickname != client.Nickname)
-                        {
-                            packet << static_cast<std::string>(client.Nickname);
-                        }
+                  [&packet, &itClient](const ClientStruct &client) {
+                      if (itClient->Nickname != client.Nickname) {
+                          packet << static_cast<std::string>(client.Nickname);
+                      }
                   });
 
     if (itClient->Socket.send(packet) != sf::Socket::Done) {
@@ -111,7 +111,7 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
 
 void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
     sf::Packet packet;
-    packet << NEW_CLIENT <<static_cast<std::string>(whatNickname);
+    packet << NEW_CLIENT << static_cast<std::string>(whatNickname);
     for (auto &user : OnlineUsers) {
         if (whatNickname == user.Nickname) {
             continue;
@@ -122,27 +122,22 @@ void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
     }
 }
 
-void Server::checkDisconectedUsers()
-{
+void Server::checkDisconectedUsers() {
     sf::Packet packet;
-    packet << HELLO;    
-    for(auto &user : OnlineUsers)
-    {
-        if(user.Socket.send(packet) != sf::Socket::Done)
-        {
+    packet << HELLO;
+    for (auto &user : OnlineUsers) {
+        if (user.Socket.send(packet) != sf::Socket::Done) {
             user.Isconected = false;
             sendWhichUserHasRetired(user.Nickname);
         }
     }
 }
 
-void Server::sendWhichUserHasRetired(tgui::String nickname)
-{
+void Server::sendWhichUserHasRetired(tgui::String nickname) {
     sf::Packet packet;
     packet << REMOVE_CLIENT << static_cast<std::string>(nickname);
     for (auto &user : OnlineUsers) {
-        if (user.Isconected == false)
-        {
+        if (user.Isconected == false) {
             continue;
         }
         if (user.Socket.send(packet) != sf::Socket::Done) {
@@ -153,7 +148,7 @@ void Server::sendWhichUserHasRetired(tgui::String nickname)
 
 void Server::sendMessageToOnlineUsers(MessageStruct msg) {
     sf::Packet packet;
-    packet << static_cast<std::string>(msg.Nickname)
+    packet << NEW_MSG << static_cast<std::string>(msg.Nickname)
            << static_cast<std::string>(msg.Message);
     for (auto &user : OnlineUsers) {
         if (msg.Nickname == user.Nickname) {
@@ -182,14 +177,14 @@ void Server::requestHandler(sf::Packet &packet, tgui::String whoseRequest) {
         packet >> nickname >> message;
         handleNewMessage(MessageStruct(static_cast<tgui::String>(nickname),
                                        static_cast<tgui::String>(message)));
-    // } else if (command == REQUEST_NICKNAMES_LIST) {
-    //     sendListOfOnlineMembers(whoseRequest);
-    // } else if (command == REQUEST_LAST_MESSAGES) {
-    //     sendListOfAllMessages(whoseRequest);
-    // } else if (command == REMOVE_CLIENT) {
-    //     //.....
-    // }
-    whoseRequest.c_str();
+        // } else if (command == REQUEST_NICKNAMES_LIST) {
+        //     sendListOfOnlineMembers(whoseRequest);
+        // } else if (command == REQUEST_LAST_MESSAGES) {
+        //     sendListOfAllMessages(whoseRequest);
+        // } else if (command == REMOVE_CLIENT) {
+        //     //.....
+        // }
+        whoseRequest.c_str();
     }
 }
 
