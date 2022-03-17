@@ -229,15 +229,13 @@ void Server::requestHandler() {
                         MessageStruct(static_cast<tgui::String>(nickname),
                                       static_cast<tgui::String>(message)));
                 }
-            } else if (status == sf::Socket::NotReady) {
-
-            } else if (status == sf::Socket::Disconnected) {
-
+            } else if (status == sf::Socket::NotReady || status == sf::Socket::Disconnected) {
+            
             } else if (status == sf::Socket::Error) {
                 std::cout << "Error, can't get packet!\n";
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+        std::this_thread::sleep_for(std::chrono::milliseconds(175));
     }
 }
 
