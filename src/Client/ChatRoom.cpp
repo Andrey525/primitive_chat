@@ -101,6 +101,10 @@ void ChatRoom::chatRoomLoop() {
             if (event.type == sf::Event::Closed) {
                 Window.close();
                 thread.terminate();
+            } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::Enter) {
+                    sendMessage();
+                }
             }
             Gui.handleEvent(event);
         }
@@ -121,14 +125,23 @@ void ChatRoom::sendMessage() {
 }
 
 void ChatRoom::addNewMessage(tgui::String mergedLine) {
+    SoundBuffer.loadFromFile("./audio/ChangeClientList.wav");
+    Sound.setBuffer(SoundBuffer);
+    Sound.play();
     ChatBox->addLine(mergedLine);
 }
 
 void ChatRoom::addNewClient(tgui::String nicknameNewClient) {
+    SoundBuffer.loadFromFile("./audio/ChangeClientList.wav");
+    Sound.setBuffer(SoundBuffer);
+    Sound.play();
     NicknameListBox->addItem(nicknameNewClient);
 }
 
 void ChatRoom::removeClient(tgui::String nicknameRemovedClient) {
+    SoundBuffer.loadFromFile("./audio/ChangeClientList.wav");
+    Sound.setBuffer(SoundBuffer);
+    Sound.play();
     NicknameListBox->removeItem(nicknameRemovedClient);
 }
 
@@ -158,7 +171,7 @@ void ChatRoom::startProcessReceivingNetworkTraffic() {
             return;
             break;
         default:
-            std::cout << static_cast<std::string>(pair.second) << '\n';
+            exit(pair.first);
             break;
         }
     }

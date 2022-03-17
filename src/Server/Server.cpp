@@ -5,14 +5,13 @@ namespace chat {
 Server::Server() {
     if (Listener.listen(8080, sf::IpAddress::LocalHost) != sf::Socket::Done) {
         std::cout << "Server Error: listen\n";
+        exit(-2);
     }
 }
 
-void Server::closeServer()
-{
+void Server::closeServer() {
     Listener.close();
-    for (auto &user : OnlineUsers)
-    {
+    for (auto &user : OnlineUsers) {
         user.Socket.disconnect();
     }
 }
@@ -29,10 +28,10 @@ void Server::accept() {
         ClientStruct &client = OnlineUsers.back();
 
         if (Listener.accept(client.Socket) != sf::Socket::Done) {
-            std::cout << "Server Error: accpet\n";
+            exit(-2);
         }
         if (client.Socket.receive(packet) != sf::Socket::Done) {
-            std::cout << "Server Error: accpet recv\n";
+            exit(-2);
         }
         packet >> nickname;
         tguiNickname = static_cast<tgui::String>(nickname);
@@ -92,7 +91,7 @@ void Server::sendListOfAllMessages(tgui::String nicknameToWhom) {
     status = itClient->Socket.send(packet);
     Mutex.unlock();
     if (status != sf::Socket::Done) {
-        std::cout << "Server Error: send AllMessages\n";
+        exit(-2);
     }
 }
 
@@ -121,7 +120,7 @@ void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
     status = itClient->Socket.send(packet);
     Mutex.unlock();
     if (status != sf::Socket::Done) {
-        std::cout << "Server Error: send OnlineMembers\n";
+        exit(-2);
     }
 }
 
@@ -140,7 +139,7 @@ void Server::sendNicknameNewClientToOther(tgui::String whatNickname) {
             status = it->Socket.send(packet);
             Mutex.unlock();
             if (status != sf::Socket::Done) {
-                std::cout << "Server Error: send nickname to other\n";
+                exit(-2);
             }
         }
     }
@@ -159,7 +158,6 @@ void Server::checkDisconectedUsers() {
         if (status == sf::Socket::Disconnected) {
             sendWhichUserHasRetired(it->Nickname);
             it = OnlineUsers.erase(it);
-            std::cout << "Element was erased!\n";
         } else {
             it++;
         }
@@ -180,7 +178,7 @@ void Server::sendWhichUserHasRetired(tgui::String nickname) {
         status = it->Socket.send(packet);
         Mutex.unlock();
         if (status != sf::Socket::Done) {
-            std::cout << "Server Error: send nickname to other\n";
+            exit(-2);
         }
     }
 }
@@ -200,7 +198,7 @@ void Server::sendMessageToOnlineUsers(MessageStruct msg) {
         status = it->Socket.send(packet);
         Mutex.unlock();
         if (status != sf::Socket::Done) {
-            std::cout << "Server Error: send message to online users\n";
+            exit(-2);
         }
     }
 }
@@ -238,10 +236,12 @@ void Server::requestHandler() {
                         MessageStruct(static_cast<tgui::String>(nickname),
                                       static_cast<tgui::String>(message)));
                 }
-            } else if (status == sf::Socket::NotReady || status == sf::Socket::Disconnected) {
-            
+            } else if (status == sf::Socket::NotReady ||
+                       status == sf::Socket::Disconnected) {
+                //
             } else if (status == sf::Socket::Error) {
                 std::cout << "Error, can't get packet!\n";
+                exit(-2);
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(175));

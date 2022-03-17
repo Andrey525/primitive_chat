@@ -1,6 +1,5 @@
 #include <SFML/Network.hpp>
 #include <TGUI/TGUI.hpp>
-#include <iostream>
 
 namespace chat {
 

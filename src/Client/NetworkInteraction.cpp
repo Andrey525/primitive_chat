@@ -7,17 +7,16 @@ sf::TcpSocket NetworkInteraction::Socket; // init Socket (because static)
 bool NetworkInteraction::connectToServer(tgui::String clientNickname) {
     sf::Packet packet;
     bool goodConnection = false;
-    Socket.setBlocking(true);
     if (Socket.connect(sf::IpAddress::LocalHost, 8080) != sf::Socket::Done) {
-        std::cout << "Error connect\n";
+        return false;
     }
     packet << static_cast<std::string>(clientNickname);
     if (Socket.send(packet) != sf::Socket::Done) {
-        std::cout << "Error send NEW_CONNECTION \n";
+        exit(-2);
     }
     packet.clear();
     if (Socket.receive(packet) != sf::Socket::Done) {
-        std::cout << "Error recv status connection\n";
+        exit(-2);
     }
     packet >> goodConnection;
     if (goodConnection == false) {
@@ -33,7 +32,7 @@ std::list<MessageStruct> NetworkInteraction::getListOfAllMessages() {
     std::string nickname;
     std::string message;
     if (Socket.receive(packet) != sf::Socket::Done) {
-        std::cout << "Error receive LAST_MESSAGES\n";
+        exit(-2);
     }
 
     packet >> countAllMessages;
@@ -50,7 +49,7 @@ void NetworkInteraction::sendMSG(tgui::String msg, tgui::String nickname) {
     packet << NEW_MSG << static_cast<std::string>(nickname)
            << static_cast<std::string>(msg);
     if (Socket.send(packet) != sf::Socket::Done) {
-        std::cout << "Error send NEW_MSG\n";
+        exit(-2);
     }
 }
 
@@ -60,7 +59,7 @@ std::list<tgui::String> NetworkInteraction::getListOfOnlineMembers() {
     uint32_t countMembers;
     std::string nickname;
     if (Socket.receive(packet) != sf::Socket::Done) {
-        std::cout << "Error receive NICKNAMES_LIST\n";
+        exit(-2);
     }
 
     packet >> countMembers;
@@ -78,7 +77,6 @@ NetworkInteraction::processReceivedNetworkTraffic() {
     sf::Socket::Status status;
     status = NetworkInteraction::Socket.receive(packet);
     if (status == sf::Socket::Done) {
-        std::cout << "Пакет прибыл! Статус Done\n";
         packet >> operation;
         if (operation == NEW_CLIENT) {
             std::string nicknameNewClient;
@@ -99,8 +97,6 @@ NetworkInteraction::processReceivedNetworkTraffic() {
             return std::make_pair(operation, mergedLine);
         } else if (operation == HELLO) {
             return std::make_pair(operation, "Hello packet");
-        } else {
-            std::cout << "ЧТО ТЫ МНЕ ПРИСЛАЛ??" << std::endl;
         }
     } else if (status == sf::Socket::Disconnected) {
         return std::make_pair(DISCONNECT,

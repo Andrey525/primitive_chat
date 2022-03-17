@@ -2,7 +2,6 @@
 #include <MessageStruct.hpp>
 #include <SFML/Network.hpp>
 #include <TGUI/TGUI.hpp>
-#include <iostream>
 #include <list>
 
 #pragma once

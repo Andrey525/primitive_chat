@@ -2,14 +2,6 @@
 
 namespace chat {
 
-enum Commands {
-    // REQUEST_NICKNAMES_LIST,
-    // REQUEST_LAST_MESSAGES,
-    NEW_MSG,
-    NEW_CLIENT,
-    REMOVE_CLIENT,
-    HELLO,
-    DISCONNECT
-};
+enum Commands { NEW_MSG, NEW_CLIENT, REMOVE_CLIENT, HELLO, DISCONNECT };
 
 } // namespace chat

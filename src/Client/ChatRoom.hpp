@@ -1,5 +1,6 @@
 #include <MessageStruct.hpp>
 #include <NetworkInteraction.hpp>
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
 #include <TGUI/TGUI.hpp>
@@ -10,8 +11,6 @@
 namespace chat {
 
 class ChatRoom {
-
-    friend class NetworkInteraction;
 
   private:
     sf::RenderWindow Window;
@@ -25,6 +24,8 @@ class ChatRoom {
     tgui::String ClientNickname;
     bool IsStart = false;
     bool IsEnd = false;
+    sf::SoundBuffer SoundBuffer;
+    sf::Sound Sound;
 
     void setupWindow();
     void setupEventHandlers();

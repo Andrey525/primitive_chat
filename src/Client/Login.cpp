@@ -11,7 +11,6 @@ void Login::setupWindow() {
     Window.create(sf::VideoMode(400, 300), "Login",
                   sf::Style::Titlebar | sf::Style::Close);
     Window.setFramerateLimit(60);
-    Window.setKeyRepeatEnabled(false);
 
     Gui.setWindow(Window);
 
@@ -65,6 +64,10 @@ tgui::String Login::loginLoop() {
         while (Window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 Window.close();
+            } else if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::Enter) {
+                    checkClientNickname();
+                }
             }
             Gui.handleEvent(event);
         }
@@ -89,12 +92,10 @@ void Login::checkClientNickname() {
     GoodAvtorization =
         NetworkInteraction::connectToServer(NicknameInputBox->getText());
     if (GoodAvtorization == true) {
-        std::cout << "Good avtorization\n";
         ClientNickname = NicknameInputBox->getText();
         return;
     } else {
-        std::cout << "Bad avtorization\n";
-        Label->setText("Nickname is taken...");
+        Label->setText("Can't connect to the Server...");
         NicknameInputBox->setText("");
         return;
     }
