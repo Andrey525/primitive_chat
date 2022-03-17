@@ -8,6 +8,15 @@ Server::Server() {
     }
 }
 
+void Server::closeServer()
+{
+    Listener.close();
+    for (auto &user : OnlineUsers)
+    {
+        user.Socket.disconnect();
+    }
+}
+
 Server::~Server() {}
 
 void Server::accept() {

@@ -11,21 +11,19 @@ class Server {
   private:
     std::list<ClientStruct> OnlineUsers;
     std::list<MessageStruct> AllMessages;
-    sf::TcpListener Listener;
     size_t MAX_COUNT_MESSAGES = 1024;
-
+    sf::TcpListener Listener;
     sf::Mutex Mutex;
 
   public:
     // активирует Listener'a
     Server();
     ~Server();
-
     // проверяет, есть ли имя клиента в списке имен и устанавливает связь с
     // клиентом. если проверки уникальности имени прошли, то добавляем клиента в
     // список участников и вызывает sendNicknameNewClientToOther
     void accept();
-
+    void closeServer();
     //отправляет имя whatNickname всем остальным клиентам
     void sendNicknameNewClientToOther(tgui::String whatNickname);
 
@@ -46,6 +44,7 @@ class Server {
     void requestHandler();
 
     void checkDisconectedUsers();
+
     void sendWhichUserHasRetired(tgui::String user);
 };
 
