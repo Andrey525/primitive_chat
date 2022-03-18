@@ -15,40 +15,22 @@ class Server {
     sf::TcpListener Listener;
     sf::Mutex Mutex;
 
-  public:
-    // активирует Listener'a
-    Server();
-    ~Server();
-    // проверяет, есть ли имя клиента в списке имен и устанавливает связь с
-    // клиентом. если проверки уникальности имени прошли, то добавляем клиента в
-    // список участников и вызывает sendNicknameNewClientToOther
-    void accept();
-    void closeServer();
-    //отправляет имя whatNickname всем остальным клиентам
     void sendNicknameNewClientToOther(tgui::String whatNickname);
-
-    // отправляет список собщений клиенту с именем nicknameToWhom
     void sendListOfAllMessages(tgui::String nicknameToWhom);
-
-    // отправляет список участников клиенту с именем nicknameToWhom
     void sendListOfOnlineMembers(tgui::String nicknameToWhom);
-
-    // рассылает всем, кроме отправителя, данное сообщение
     void sendMessageToOnlineUsers(MessageStruct msg);
-
-    //добавляет сообщение в список и потом вызывает sendMessageToOnlineUsers
     void handleNewMessage(MessageStruct msg);
-
-    //получает пакет, в зависимости от команды правильно распаковывает пакет и
-    //вызывает один из верхних методов
-    void requestHandler();
-
-    void checkDisconectedUsers();
-
     void sendWhichUserHasRetired(tgui::String user);
-
     const std::list<ClientStruct>::iterator
     findUserInList(tgui::String nickname);
+
+  public:
+    Server();
+    ~Server();
+    void checkDisconectedUsers();
+    void accept();
+    void requestHandler();
+    void closeServer();
 };
 
 } // namespace chat
