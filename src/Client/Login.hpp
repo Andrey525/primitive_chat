@@ -22,8 +22,6 @@ class Login {
     tgui::String ClientNickname;
     bool GoodAvtorization = false;
     size_t MAX_SIZE_LENGHT_NAME = 10;
-    sf::SoundBuffer SoundBuffer;
-    sf::Sound Sound;
 
     void setupWindow();
     void setupEventHandlers();

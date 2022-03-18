@@ -36,14 +36,7 @@ void Server::accept() {
         packet >> nickname;
         tguiNickname = static_cast<tgui::String>(nickname);
 
-        const auto &itClient =
-            std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
-                         [&](const ClientStruct &st1) -> bool {
-                             if (tguiNickname == st1.Nickname) {
-                                 return true;
-                             }
-                             return false;
-                         });
+        auto itClient = findUserInList(tguiNickname);
         packet.clear();
 
         if (itClient != OnlineUsers.end()) { // не уникальное имя
@@ -71,14 +64,7 @@ void Server::accept() {
 void Server::sendListOfAllMessages(tgui::String nicknameToWhom) {
     sf::Packet packet;
     sf::Socket::Status status;
-    const auto &itClient =
-        std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
-                     [&](const ClientStruct &st1) -> bool {
-                         if (nicknameToWhom == st1.Nickname) {
-                             return true;
-                         }
-                         return false;
-                     });
+    auto itClient = findUserInList(nicknameToWhom);
 
     packet << static_cast<uint32_t>(AllMessages.size());
 
@@ -98,14 +84,7 @@ void Server::sendListOfAllMessages(tgui::String nicknameToWhom) {
 void Server::sendListOfOnlineMembers(tgui::String nicknameToWhom) {
     sf::Packet packet;
     sf::Socket::Status status;
-    const auto &itClient =
-        std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
-                     [&](const ClientStruct &st1) -> bool {
-                         if (nicknameToWhom == st1.Nickname) {
-                             return true;
-                         }
-                         return false;
-                     });
+    auto itClient = findUserInList(nicknameToWhom);
 
     packet << static_cast<uint32_t>(OnlineUsers.size() - 1);
     auto it_last = OnlineUsers.end();
@@ -246,6 +225,18 @@ void Server::requestHandler() {
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(175));
     }
+}
+
+const std::list<ClientStruct>::iterator
+Server::findUserInList(tgui::String nickname) {
+    auto itClient = std::find_if(OnlineUsers.begin(), OnlineUsers.end(),
+                                 [&](const ClientStruct &st1) -> bool {
+                                     if (nickname == st1.Nickname) {
+                                         return true;
+                                     }
+                                     return false;
+                                 });
+    return itClient;
 }
 
 } // namespace chat

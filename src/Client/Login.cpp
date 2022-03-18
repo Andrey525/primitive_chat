@@ -88,15 +88,21 @@ void Login::checkClientNickname() {
         NicknameInputBox->setText("");
         return;
     }
-
-    GoodAvtorization =
+    std::pair<bool, int> statusConnection;
+    statusConnection =
         NetworkInteraction::connectToServer(NicknameInputBox->getText());
+    GoodAvtorization = statusConnection.first;
     if (GoodAvtorization == true) {
         ClientNickname = NicknameInputBox->getText();
         return;
     } else {
-        Label->setText("Can't connect to the Server...");
-        NicknameInputBox->setText("");
+        if (statusConnection.second == 0) {
+            Label->setText("Nickname is taken...");
+            NicknameInputBox->setText("");
+        } else {
+            Label->setText("Can't connect to the Server...");
+            NicknameInputBox->setText("");
+        }
         return;
     }
 }

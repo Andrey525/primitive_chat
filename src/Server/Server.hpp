@@ -46,6 +46,9 @@ class Server {
     void checkDisconectedUsers();
 
     void sendWhichUserHasRetired(tgui::String user);
+
+    const std::list<ClientStruct>::iterator
+    findUserInList(tgui::String nickname);
 };
 
 } // namespace chat
