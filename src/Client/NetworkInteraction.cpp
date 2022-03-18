@@ -4,11 +4,12 @@ namespace chat {
 
 sf::TcpSocket NetworkInteraction::Socket; // init Socket (because static)
 
-bool NetworkInteraction::connectToServer(tgui::String clientNickname) {
+std::pair<bool, int>
+NetworkInteraction::connectToServer(tgui::String clientNickname) {
     sf::Packet packet;
     bool goodConnection = false;
     if (Socket.connect(sf::IpAddress::LocalHost, 8080) != sf::Socket::Done) {
-        return false;
+        return std::make_pair(false, -1);
     }
     packet << static_cast<std::string>(clientNickname);
     if (Socket.send(packet) != sf::Socket::Done) {
@@ -22,7 +23,7 @@ bool NetworkInteraction::connectToServer(tgui::String clientNickname) {
     if (goodConnection == false) {
         Socket.disconnect();
     }
-    return goodConnection;
+    return std::make_pair(goodConnection, 0);
 }
 
 std::list<MessageStruct> NetworkInteraction::getListOfAllMessages() {

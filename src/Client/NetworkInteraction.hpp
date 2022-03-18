@@ -16,7 +16,7 @@ class NetworkInteraction {
   public:
     static sf::TcpSocket Socket;
 
-    bool static connectToServer(tgui::String clientNickname);
+    std::pair<bool, int> static connectToServer(tgui::String clientNickname);
     std::list<MessageStruct> static getListOfAllMessages();
     std::list<tgui::String> static getListOfOnlineMembers();
     void static sendMSG(tgui::String msg, tgui::String clientNickname);
