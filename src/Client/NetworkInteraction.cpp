@@ -1,4 +1,4 @@
-#include <NetworkInteraction.hpp>
+#include <Client/NetworkInteraction.hpp>
 
 namespace chat {
 

@@ -1,5 +1,5 @@
-#include <ChatRoom.hpp>
-#include <NetworkInteraction.hpp>
+#include <Client/ChatRoom.hpp>
+#include <Client/NetworkInteraction.hpp>
 
 namespace chat {
 
@@ -167,7 +167,6 @@ void ChatRoom::startProcessReceivingNetworkTraffic() {
             break;
         case DISCONNECT:
             IsEnd = true;
-            std::cout << "Disconected\n";
             return;
             break;
         default:

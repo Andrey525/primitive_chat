@@ -1,5 +1,7 @@
+#include <Server/Server.hpp>
+
 #include <SFML/Graphics.hpp>
-#include <Server.hpp>
+
 #include <iostream>
 
 bool checkExit(chat::Server &server) {

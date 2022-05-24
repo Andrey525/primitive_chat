@@ -1,12 +1,14 @@
-#include <MessageStruct.hpp>
-#include <NetworkInteraction.hpp>
+#pragma once
+
+#include <Client/NetworkInteraction.hpp>
+#include <Common/MessageStruct.hpp>
+
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
 #include <TGUI/TGUI.hpp>
-#include <list>
 
-#pragma once
+#include <list>
 
 namespace chat {
 

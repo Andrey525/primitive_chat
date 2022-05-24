@@ -1,5 +1,6 @@
-#include <TGUI/TGUI.hpp>
 #pragma once
+
+#include <TGUI/TGUI.hpp>
 
 namespace chat {
 

@@ -1,10 +1,12 @@
-#include <Commands.hpp>
-#include <MessageStruct.hpp>
+#pragma once
+
+#include <Common/Commands.hpp>
+#include <Common/MessageStruct.hpp>
+
 #include <SFML/Network.hpp>
 #include <TGUI/TGUI.hpp>
-#include <list>
 
-#pragma once
+#include <list>
 
 namespace chat {
 
