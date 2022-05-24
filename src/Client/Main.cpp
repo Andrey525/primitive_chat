@@ -1,6 +1,6 @@
-#include <ChatRoom.hpp>
-#include <Login.hpp>
-#include <NetworkInteraction.hpp>
+#include <Client/ChatRoom.hpp>
+#include <Client/Login.hpp>
+#include <Client/NetworkInteraction.hpp>
 
 int main() {
     chat::Login login;

@@ -1,6 +1,9 @@
-#include <ClientStruct.hpp>
-#include <Commands.hpp>
-#include <MessageStruct.hpp>
+#pragma once
+
+#include <Common/Commands.hpp>
+#include <Common/MessageStruct.hpp>
+#include <Server/ClientStruct.hpp>
+
 #include <iostream>
 #include <list>
 #include <thread>
